@@ -4,6 +4,8 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
+const vuxLoader = require('vux-loader')
+
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -82,7 +84,26 @@ function resolve (dir) {
 }
 
 const webpackConfig = originalConfig
-const vuxLoader = require('vux-loader')
+// const vuxLoader = require('vux-loader')
+// module.exports = vuxLoader.merge(webpackConfig, {
+//   plugins: ['vux-ui']
+// })
+
 module.exports = vuxLoader.merge(webpackConfig, {
-  plugins: ['vux-ui']
+  plugins: [
+    {
+      name: 'vux-ui'
+    },
+    {
+      name:'progress-bar'
+    },
+    {
+      name: 'duplicate-style'
+    },
+    {
+      name: 'less-theme',
+      path:'static/styles/theme.less'
+     // path: 'src/common/styles/theme.less'
+    }
+  ]
 })
