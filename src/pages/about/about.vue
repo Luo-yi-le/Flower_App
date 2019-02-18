@@ -10,7 +10,7 @@
     name: 'about',
     data() {
       return {
-        url: 'https://github.com/Luo-yi-le/Flower_App'
+        url: 'https://github.common/Luo-yi-le/Flower_App'
       }
     }
   }

@@ -1,0 +1,4 @@
+export const UPDATE_TITLE = 'UPDATE_TITLE';
+export const UPDATE_ADDRESS = 'UPDATE_ADDRESS';
+export const UPDATE_LOADING = 'UPDATE_LOADING'
+

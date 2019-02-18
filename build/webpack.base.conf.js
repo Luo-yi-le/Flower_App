@@ -29,6 +29,9 @@ function resolve (dir) {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      'src': path.resolve(__dirname, '../src'),
+      'pages': path.resolve(__dirname, '../src/pages'),
+      'store': path.resolve(__dirname, '../src/store'),
     }
   },
   module: {
@@ -103,7 +106,6 @@ module.exports = vuxLoader.merge(webpackConfig, {
     {
       name: 'less-theme',
       path:'static/styles/theme.less'
-     // path: 'src/common/styles/theme.less'
     }
   ]
 })

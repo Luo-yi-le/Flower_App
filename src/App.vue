@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <div v-transfer-dom>
-    <!--<loading v-model="isLoading"></loading>-->
+    <loading :text="loadText" v-model="isLoading"></loading>
   </div>
   <keep-alive>
     <router-view/>
@@ -20,6 +20,16 @@ export default {
   components: {
     Loading,
     TransferDom
+  },
+  data(){
+    return {
+      loadText:"loading"
+    }
+  },
+  computed:{
+    ...mapState({
+      isLoading: state => state.onLoading.isLoading
+    })
   }
 }
 </script>
@@ -34,7 +44,8 @@ export default {
     width: 100%;
     overflow-x: hidden;
   }
-  #app {
+  #app{
+    width: 100%;
     height: 100%;
   }
   .vux-slider .vux-icon-dot {

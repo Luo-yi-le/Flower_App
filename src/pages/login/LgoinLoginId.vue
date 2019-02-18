@@ -9,7 +9,7 @@
     <group>
       <x-input placeholder="登陆账号"
                v-model="userName"
-              >
+      >
         <!--is-type="china-mobile"-->
       </x-input>
       <x-input type="number"
@@ -34,10 +34,9 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import * as api from '../../api/api.js'
-  import {XInput, Group, XButton, Cell, Toast, base64,Box} from 'vux'
 
+  import * as api from '../../../static/js/api/api.js'
+  import {XInput, Group, XButton, Cell, Toast, base64, Box, Msg} from 'vux'
 
   export default {
     name: "Login",
@@ -47,36 +46,43 @@
       XButton,
       Group,
       Cell,
-      Toast
+      Toast,
+      Msg
     },
     data() {
       return {
         btnText: '发送验证码',
         disabled: false,
         time: 0,
+        userId: '',
         userName: '',
-        userPassword:'',
+        userPassword: '',
         verifyCode: '',
         smsCode: ''
       }
     }
     , methods: {
       onLogin: function () {
-        var that = this;
-        var user = new URLSearchParams();
+        const that = this;
+        const user = new URLSearchParams();
         user.append('userName', that.userName);
         user.append('userPassword', that.userPassword);
         if (this.userName !== "" && this.userPassword !== "") {
-          axios.post(api.login, user)
+          this.$http.post(api.login, user)
             .then(res => {
-              sessionStorage.setItem("userPassword", that.userPassword);
-              alert(that.userName + '登陆成功');
-              this.$router.push("/index");
-              console.log(this.userName)
+             // if (res.data.userName !== "") {
+                sessionStorage.setItem("userName", that.userName);
+                this.$vux.toast.show({
+                  text: that.userName+'登陆成功'
+                })
+              this.$router.push("/page/home");
+             // }
             }).catch(error => {
-            this.$Loading.error();
-            alert('账号或者密码错误')
-            console.log(error);
+            //this.$Loading.error();
+            this.$vux.toast.text({
+              text: that.userName+'账号或者密码错误'
+            })
+            //console.log(error);
           });
         } else {
           alert('账号或者密码错误');
@@ -86,7 +92,10 @@
   }
 </script>
 
+
 <style scoped lang="less">
+  /*@import '~iview/dist/styles/iview.css';*/
+
   .login {
     height: 100%;
     text-align: center;

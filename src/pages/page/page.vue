@@ -54,7 +54,7 @@
       return {
         showMenu: false,
         menus: {
-          menu1: '关于 Pretty Vendor ',
+          menu1: '关于 花之轩',
           menu2: '退出登录'
         },
         title: '头部'
@@ -75,13 +75,13 @@
         }
       },
       isShowTabbar() {
-        if (/detail|theme|order|address|about/.test(this.$route.path)) {
+        if (/detail|address|about|setUp|userInfo/.test(this.$route.path)) {
           return true
         }
         return false
       },
       isPaddingBottom() {
-        if (/detail|theme|order|address|about/.test(this.$route.path)) {
+        if (/detail|address|about|setUp|userInfo/.test(this.$route.path)) {
           return '0'
         }
         return '53px'
@@ -127,34 +127,34 @@
         }
 
         &.icon-category {
-          background-image: url(../../../static/img/toolbar/category.png);
+          background-image: url('../../../static/img/toolbar/category.png');
         }
 
         &.icon-cart {
-          background-image: url(../../../static/img/toolbar/cart.png);
+          background-image: url('../../../static/img/toolbar/cart.png');
         }
 
         &.icon-user {
-          background-image: url(../../../static/img/toolbar/my.png);
+          background-image: url('../../../static/img/toolbar/my.png');
         }
       }
 
       &.weui-bar__item_on {
         .icon {
           &.icon-home {
-            background-image: url(../../../static/img/toolbar/home@selected.png) !important;
+            background-image: url('../../../static/img/toolbar/home@selected.png') !important;
           }
 
           &.icon-category {
-            background-image: url(../../../static/img/toolbar/category@selected.png) !important;
+            background-image: url('../../../static/img/toolbar/category@selected.png') !important;
           }
 
           &.icon-cart {
-            background-image: url(../../../static/img/toolbar/cart@selected.png) !important;
+            background-image: url('../../../static/img/toolbar/cart@selected.png') !important;
           }
 
           &.icon-user {
-            background-image: url(../../../static/img/toolbar/my@selected.png) !important;
+            background-image: url('../../../static/img/toolbar/my@selected.png') !important;
           }
         }
       }

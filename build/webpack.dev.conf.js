@@ -25,17 +25,16 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [
-        { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
+        {from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html')},
       ],
     },
     hot: true,
-    contentBase: false, // since we use CopyWebpackPlugin.
     compress: true,
     host: HOST || config.dev.host,
     port: PORT || config.dev.port,
     open: config.dev.autoOpenBrowser,
     overlay: config.dev.errorOverlay
-      ? { warnings: false, errors: true }
+      ? {warnings: false, errors: true}
       : false,
     publicPath: config.dev.assetsPublicPath,
     proxy: config.dev.proxyTable,
@@ -55,7 +54,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
-      inject: true
+      inject: true,
+      favicon: 'favicon.ico'
     }),
     // copy custom static assets
     new CopyWebpackPlugin([
