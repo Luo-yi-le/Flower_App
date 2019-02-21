@@ -1,32 +1,33 @@
 <template>
   <div class="cart">
-    <div >
+    <div v-if="cartAllList.length>0">
       <!--v-if="this.cartData.length>0"-->
       <div class="cart-box">
-        <div class="cart-item vux-1px-b" v-for="(item,index) in this.cartData" :key="index">
+        <div class="cart-item vux-1px-b" v-for="(item,index) in cartAllList" :key="index">
           <div class="cart-item-main">
-            <div class="cart-item-checkbox" @click="toggleSelect(item.id)">
-              <i class="icon_checkbox" ></i>
-              <!--v-if="item.isChecked"-->
-              <i class="icon_checkbox checked" ></i>
+            <div class="cart-item-checkbox" @click="toggleSelect(item.cartId)">
+              <i class="icon_checkbox" v-if="item.isChecked"></i>
+
+              <i class="icon_checkbox checked" v-else></i>
               <!--v-else-->
             </div>
-            <div class="cart-item-image" @click="linkToDetail(item.id)">
-              <img src="./../../../static/img/flower/9012177.jpg" alt="img">
+            <div class="cart-item-image" @click="linkToDetail(item.cartId)">
+              <img :src="'./../../../static/img/flower/'+item.flower.flowerImageName" alt="img">
             </div>
+
             <div class="cart-item-ctrl">
               <div class="title-box">
-                <span class="title">不变的承诺--99枝红玫瑰</span>
-                <span class="price">{{item.price|formatMoney}}</span>
+                <span class="title">{{item.flower.flowerName}}</span>
+                <span class="price">{{item.flower.flowerPrice|formatMoney}}</span>
               </div>
               <div class="bottom-box">
                 <div class="cart-item-counts">
-                  <a href="javascript:;" class="btns cut" :class="[item.count===1?'disabled':'']"
-                     data-type="cut" @click="cut(item.id)">-</a>
-                  <a href="javascript:;" class="counts">{{item.count}}</a>
-                  <a href="javascript:;" class="btns add" data-type="add" @click="add(item.id)">+</a>
+                  <a href="javascript:;" class="btns cut" :class="[item.cartAmount===1?'disabled':'']"
+                     data-type="cut" @click="cut(item.cartId)">-</a>
+                  <a href="javascript:;" class="counts">{{item.cartAmount}}</a>
+                  <a href="javascript:;" class="btns add" data-type="add" @click="add(item.cartId)">+</a>
                 </div>
-                <span class="delete" @click="del(item.id)">×</span>
+                <span class="delete" @click="del(item.cartId)">×</span>
               </div>
             </div>
           </div>
@@ -35,27 +36,26 @@
       <div class="cart-footer">
         <div class="all-select" @click="toggleAllCheck">
           <img src="../../../static/img/icon/all@selected.png"
+
                alt="all">
           <!-- v-if="this.cartData.length===this.selectedArr.length"-->
-          <img src="../../../static/img/icon/all.png" alt="" >
+          <img src="../../../static/img/icon/all.png" alt="">
           <!--v-else-->
           <span>全选()</span>
           <!--{{this.selectedArr.length}}-->
         </div>
+        <span class="userName">下单人：{{userName}}</span>
         <div class="all-price-cutmit" :class="[tolalPrice===0?'disabled':'']">
           <span class="accounts-btn" @click="submitOrder">下单</span>
           <span class="price-text">{{tolalPrice | formatMoney}}</span>
           <span class="arrow-icon">
-            <img src="../../../static/img/icon/arrow@grey.png" >
-            <!--v-if="tolalPrice===0"-->
-            <img src="../../../static/img/icon/arrow.png" >
-            <!--v-else-->
+            <img src="../../../static/img/icon/arrow@grey.png" v-if="tolalPrice===0" >
+            <img src="../../../static/img/icon/arrow.png" v-else>
           </span>
         </div>
       </div>
     </div>
-    <div class="no-data">
-      <!-- v-else-->
+    <div class="no-data" v-else>
       您的购物车空空如也。
     </div>
   </div>
@@ -63,19 +63,26 @@
 
 <script>
   import {mapGetters, mapMutations} from 'vuex'
+  import * as api from '../../../static/js/api/api.js'
 
+  const userName=sessionStorage.getItem('userName')
   export default {
     name: 'cart',
     data() {
-      return {}
+      return {
+        cartAllList: [],
+        flowerList: [],
+        userName:userName
+      }
     },
     computed: {
-      ...mapGetters(['cartData', 'tolalPrice', 'selectedArr']),
+      ...mapGetters(['cartAllList', 'tolalPrice', 'selectedArr']),
       allChecked() {
-        return this.selectedArr.length === this.cartData.length
+        return this.selectedArr.length === this.cartAllList.length
       }
     },
     created() {
+      this.selectAllCart()
     },
     methods: {
       // ...mapMutations([
@@ -89,8 +96,8 @@
         this.$router.push({path: '/page/detail', query: {id: id}})
       },
       findIndexById(id) {
-        return this.cartData.findIndex(item => {
-          return item.id === id
+        return this.cartAllList.findIndex(item => {
+          return item.cartId === id
         })
       },
       toggleSelect(id) {
@@ -118,7 +125,25 @@
           query: {account: this.tolalPrice}
         })
       }
+      , selectAllCart() {
+        const userId = sessionStorage.getItem('userId')
+        let that = this
+        that.$http.post(api.selectAllCart, {
+          'userId': userId
+        }).then((res) => {
+          that.cartAllList = res.data.data
+          that.flowerList = res.data.data.flower
+          console.log(that.cartAllList)
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
+      ,updateCartAmount(){
+        let that=this
+        that.$http.post(api.updateCartAmount)
+      }
     },
+
     filters: {
       formatMoney(value) {
         return '￥' + value
@@ -330,5 +355,11 @@
       align-items: center;
       justify-content: center;
     }
+  }
+  .userName{
+    font: 0.8rem;
+    width: 20rem;
+    margin-top: 0.5rem;
+    color: lime;
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="detail">
-    <div class="detail-main">
+    <div class="detail-main" v-for="pro in product">
       <!-- v-if="product"-->
       <div class="fixed-cart-box" @click="linkToCart" :class="[isShake ?'animate':'']">
         <img src="../../../static/img/icon/cart@top.png" alt="icon-cart" ref="topCart">
@@ -9,7 +9,7 @@
         <!-- v-if="this.totalCount>0"-->
       </div>
       <div class="detail-img">
-        <img src="./../../../static/img/flower/9012177.jpg" alt="image">
+        <img :src="'./../../../static/img/flower/'+pro.flowerImageName" alt="image">
       </div>
       <div class="cart-box">
         <div class="product-counts">
@@ -26,14 +26,10 @@
         </div>
       </div>
       <div class="product-info-box">
-        <div class="stock"
-        >有货
-        </div>
-        <!--v-if="product.stock>0"-->
-        <!--<div class="stock no"-->
-        <!--v-else>缺货</div>-->
-        <div class="name">不变的承诺--99枝红玫瑰</div>
-        <div class="price">￥520</div>
+        <div class="stock" v-if="pro.state.stateId==2">已上架</div>
+        <div class="stock no" v-else>已下架</div>
+        <div class="name">{{pro.flowerName}}</div>
+        <div class="price">{{pro.flowerPrice|formatMoney}}</div>
       </div>
     </div>
     <div class="detail-bottom">
@@ -44,7 +40,7 @@
       </tab>
       <swiper v-model="index" height="auto" :show-dots="false">
         <swiper-item v-for="(item, index) in list" :key="index">
-          <div class="tab-swiper vux-center">{{item}}</div>
+          <div class="tab-swiper vux-center">{{product}}</div>
         </swiper-item>
       </swiper>
     </div>
@@ -54,13 +50,14 @@
 <script>
   import {PopupPicker, Tab, TabItem, Swiper, SwiperItem} from 'vux'
   import {mapState, mapMutations, mapGetters} from 'vuex'
+  import * as api from '../../../static/js/api/api.js'
 
-  const tabList = () => ['商品详情', '产品参数', '售后保障']
+  const tabList = () => ['商品详情', '产品参数',]
   export default {
     name: 'detail',
     data() {
       return {
-        product: null,
+        product: [],
         countsArray: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]],
         count: ['1'],
         list: tabList(),
@@ -78,23 +75,33 @@
     created() {
     },
     activated() {
-      // this.getAllProducts()
+      this.getAllProducts()
     },
     methods: {
       linkToCart() {
         this.$router.push({path: '/page/cart'})
       },
       getAllProducts() {
-        this.$http
-          .get(
-            '/product/all'
-          )
+        let that = this
+        let flowerId = this.$route.query.id
+        that.$http.get(api.getFlower, {
+          params: {
+            flowerId: flowerId,
+            skip: 0,
+            size: 1
+          }
+        })
           .then(res => {
-            let detailData = res.data.data.filter(item => {
-              return item.id === +this.$route.query.id
-            })
-            this.product = detailData[0]
-          })
+            that.product = res.data.data
+            console.log(that.product = res.data.data)
+            // let detailData = res.data.data.filter(item => {
+            //   return item.id === +this.$route.query.id
+            // })
+            // console.log(detailData)
+            //that.product = detailData[0]
+          }).catch((err)=>{
+            console.log(err)
+        })
       },
       onAddToCart() {
         // 如果没登录，先去登录
@@ -143,6 +150,11 @@
       TabItem,
       Swiper,
       SwiperItem
+    },
+    filters: {
+      formatMoney(value) {
+        return '￥' + value
+      }
     }
   }
 </script>

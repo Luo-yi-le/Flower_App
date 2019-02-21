@@ -1,38 +1,42 @@
 <template>
   <div class="home">
-    <swiper :aspect-ratio="400/750" loop auto dots-position="center" :duration="800">
-      <swiper-item class="swiper-item" v-for="(item, index) in imgList" :key="index"
-                   @click.native="linkToDetail(2)">
-        <img :src="item.img " alt="image">
-      </swiper-item>
-    </swiper>
-    11
-    <div class="selected-themes">
-      <div class="title">
-        <h5>精选主题</h5>
-      </div>
-      <div class="selectd-box">
-        <div class="selectd-item big" v-if="index===2" v-for="(item,index) in 2" :key="index"
-             @click="linkToTheme(2)" :data-name="item.name">
-          <img src="./../../../static/img/flower/201708111123591219.jpg" alt="">
+    <!--<mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit" class="scrollView">-->
+      <swiper :aspect-ratio="400/750" loop auto dots-position="center" :duration="800">
+        <swiper-item class="swiper-item" v-for="(item, index) in imgList" :key="index"
+                     @click.native="linkToDetail(2)">
+          <img :src="item.img " alt="image">
+        </swiper-item>
+      </swiper>
+      11
+      <div class="selected-themes">
+        <div class="title">
+          <h5>精选主题</h5>
         </div>
-        <div class="selectd-item" :data-id="item.id" :data-name="item.name" @click="linkToTheme(2)" v-else>
-          <img src="./../../../static/img/flower/201709151725463208.jpg" alt="">
+        <div class="selectd-box">
+          <div class="selectd-item big" v-if="index===2" v-for="(item,index) in 2" :key="index"
+               @click="linkToTheme(2)" :data-name="item.name">
+            <img src="./../../../static/img/flower/201708111123591219.jpg" alt="">
+          </div>
+          <div class="selectd-item" :data-id="item.id" :data-name="item.name" @click="linkToTheme(2)" v-else>
+            <img src="./../../../static/img/flower/201709151725463208.jpg" alt="">
+          </div>
         </div>
       </div>
-    </div>
-    <div class="recent-products">
-      <div class="title">
-        <h5>最近新品</h5>
+      <div class="recent-products">
+        <div class="title">
+          <h5>最近新品</h5>
+        </div>
+        <products :products="recentList"></products>
       </div>
-      <products :products="recentList"></products>
-    </div>
+    <!--</mescroll-vue>-->
   </div>
 </template>
 
 <script>
   import {SwiperItem, Swiper} from 'vux'
   import products from '@/components/Products.vue'
+
+  import MescrollVue from 'mescroll.js/mescroll.vue'
 
   const bannerId = 1
   const themeIds = '1,2,3'
@@ -47,7 +51,7 @@
           {id: '103', img: './../../../static/img/planting/19_yuanxiao_m.jpg'},
         ],
         themeList: [],
-        recentList: []
+        recentList: [],
       }
     },
     created() {
@@ -96,6 +100,7 @@
       Swiper,
       products,
       SwiperItem,
+      MescrollVue
     }
   }
 </script>

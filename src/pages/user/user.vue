@@ -2,7 +2,7 @@
   <div class="user">
     <div class="user-header">
       <img class="avatar" link="/setUp"
-           src="../../../static/img/icon/user@default.png"
+           :src="'../../../static/img/user/'+userName+'.jpg'"
            alt="">
       <span class="nickname"></span>
       {{userName}}
@@ -14,20 +14,16 @@
       >
         <!--   v-if="this.userInfo.addressInfo"-->
         <h5 class="address-title">地址管理<i class="icon-arrow"></i></h5>
-        <div class="address-main">
+        <div class="address-main" v-for="address in addressList">
           <div class="text-row">
-            <!--{{userInfo.addressInfo.name}}-->111
+            {{address.consigneeName}}&nbsp;&nbsp;{{address.consigneePhone}}&nbsp;&nbsp;
+            {{address.address}}&nbsp;&nbsp;{{address.detailedAddress}}
           </div>
-          <div class="text-row">
-            <!--{{userInfo.addressInfo.mobile}}-->111
-          </div>
-          <div class="text-row">
-            <!--{{totalDetail}}-->11
-          </div>
+          <!--<div class="text-row"></div>-->
+          <!--<div class="text-row"></div>-->
         </div>
       </div>
-      <div class="add-new-address"
-      >
+      <div class="add-new-address">
         <!--  v-else-->
         <i class="icon-add">+</i>
         <span>添加地址</span>
@@ -35,57 +31,43 @@
     </div>
     <div class="user-order">
       <h5 class="order-title">我的订单</h5>
-      <div class="order-list"
-      >
-        <!--v-if="userInfo.orderInfo.length>0"-->
-        <div class="order-item"
-
-        >
-          <!-- v-for="(item,index) in userInfo.orderInfo"   :key="index"-->
+      <div class="order-list" v-if="orderInfo.length>0">
+        <div class="order-item" v-for="(order,index) in orderInfo" :key="index">
           <div class="order-header">
             订单编号:
             <span class="order-no">
-              <!--{{item.order_no}}-->1
+              {{order.orderId}}
             </span>
           </div>
           <div class="order-main">
-            <div class="item-left">
-              <!--<img ></img>-->
-              <!--:src="item.snap_img"-->
-            </div>
-            <div class="item-middle">
-              <div>
-                <!--{{item.snap_name}}-->
+            <span v-for="(show,index) in order.orderflowerList">
+              <div class="item-left">
+                <img :src="'../../../static/img/flower/'+show.flower.flowerImageName">
               </div>
-              <div>
-                <!--{{item.total_count}}-->1
-                件商品
-              </div>
-            </div>
+              <!--<div class="item-middle">-->
+                <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                  <!--&lt;!&ndash;{{show.cartId}}&ndash;&gt;-->
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--<div>-->
+                  <!--&lt;!&ndash;{{show.index(1)}}&ndash;&gt;-->
+                  <!--件商品-->
+                <!--</div>-->
+              <!--</div>-->
+            </span>
             <div class="item-right">
-              <p class="order-status-txt unpay"
-              >待付款</p>
-              <!--v-if="item.status==1"-->
-              <p class="order-status-txt payed"
-              >已付款</p>
-              <!--v-else-if="item.status==2"-->
-              <p class="order-status-txt done"
-              >已发货</p>
-              <!--v-else-if="item.status==3"-->
+              <p class="order-status-txt unpay" v-if="order.orderState==3">待付款</p>
+              <!--<p class="order-status-txt payed" v-if="item.orderState==4">已付款</p>-->
+              <p class="order-status-txt done" v-if="order.orderState==4">已发货</p>
             </div>
           </div>
-          <div class="order-footer"
-          >
-            <!--v-if="item.status==1"-->
+          <div class="order-footer" v-if="order.orderState==3">
             <span>实付:</span>
-            <!--{{item.total_price | formatMoney}}-->
+            {{order.orderPrice|formatMoney}}
             <button class="pay">付款</button>
           </div>
         </div>
       </div>
-      <div class="no-data"
-      >
-        <!--v-else-->
+      <div class="no-data" v-else>
         您还没有订单哦~
       </div>
     </div>
@@ -93,13 +75,18 @@
 </template>
 
 <script>
+  import * as api from '../../../static/js/api/api'
   import {mapGetters} from 'vuex'
-  var userName=sessionStorage.getItem("userName");
+
+  var userName = sessionStorage.getItem("userName");
   export default {
     name: 'user',
     data() {
       return {
-        userName:userName,
+        userName: userName,
+        addressList: [],
+        orderInfo: [],
+        list: []
       }
     },
     computed: {
@@ -110,12 +97,46 @@
     },
     mounted() {
     },
+    created() {
+      this.selectAddress()
+      this.selectAllOrder()
+    },
     methods: {
       editAddress() {
         this.$router.push({path: '/page/address'})
       }
-    },
-    filters: {
+      , selectAddress() {
+        const that = this
+        const userId = sessionStorage.getItem("userId");
+        that.$http.post(api.selectAllAddress, {"userId": userId})
+          .then(res => {
+            that.addressList = res.data.data;
+            console.log(that.addressList);
+          }).catch(res => {
+          console.log(res);
+        })
+      }
+      , selectAllOrder() {
+        const that = this
+        const userId = sessionStorage.getItem('userId')
+        that.$http.get(api.selectAllOrder, {
+          params: {
+            userId: userId,
+            orderState: 8
+          }
+        })
+          .then(res => {
+            that.orderInfo = res.data.data;
+            console.log(that.orderInfo);
+             that.list=res.data.data.orderflowerList
+            // console.log( that.list=res.data.data.orderflowerList)
+          }).catch(err => {
+          console.log(err)
+        })
+      }
+    }
+
+    , filters: {
       formatMoney(value) {
         return '￥' + value
       }
@@ -144,9 +165,10 @@
       .nickname {
         margin-left: 10px;
       }
+
       .nickname1 {
         margin-left: 10px;
-        color:#fff;
+        color: #fff;
       }
     }
 
@@ -259,8 +281,8 @@
             border-radius: 2px;
 
             img {
-              height: 100%;
-              width: 100%;
+              height: 4.6rem;
+              width: 4.6rem;
             }
           }
 
@@ -282,6 +304,7 @@
             align-items: center;
             justify-content: flex-end;
             color: #b42f2d;
+            text-align: right;
           }
         }
 

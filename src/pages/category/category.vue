@@ -1,19 +1,19 @@
 <template>
     <div class="category">
         <ul class="category-menu vux-1px-r">
-            <li v-for="(item,index) in menu"
+            <li v-for="(item,index) in 1"
                 :key="index"
                 class="menu-item"
                 :class="[currentIndex === index?'active':'']"
                 @click="switchCategory(index,item.id)">
-              爱情鲜花
+              鲜花
             </li>
         </ul>
         <div class="category-main">
             <div class="category-detail-box">
                 <div class="category-top"
-                    >
-                  <!-- v-if="menu.length>0"-->
+                     >
+                  <!--v-if="menu.length>0" -->
                     <div class="category-header">
                         <img src="./../../../static/img/flower/9012177.jpg"
                              alt="small-banner">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="category-list">
                     <div class="category-goods-items"
-                         v-for="(item,index) in list"
+                         v-for="(item,index) in 1"
                          @click="linktoDetail(item.id)"
                          :key="index">
                         <img src="./../../../static/img/flower/9012177.jpg" alt="" class="goods-image">
@@ -39,18 +39,18 @@
 
 <script>
   const categoryList = () => ['', '', '']
-
+import * as api from '../../../static/js/api/api'
 export default {
     name: 'category',
     data() {
         return {
-            menu: [1,2,3,4,5,6],
+            menu: [],
             list: "",
             currentIndex: 0
         }
     },
     created() {
-        // this.getData()
+        //this.getData()
     },
     computed: {
         menuBanner() {
@@ -70,17 +70,18 @@ export default {
         },
         async getData() {
             let res = await this.getCategory()
-            this.menu = res.data.data.category
+            this.menu = res.data.data
+          console.log(this.menu = res.data.data)
             this.getProduct(this.menu[0].id)
         },
         getCategory() {
             return this.$http
-            .get('/category/all')
+            .get(api.getAllFloweruse)
         },
         getProduct(id) {
             this.$http
                 .get(
-                    '/product/by_category',
+                    // '/product/by_category',
                 {
                     params: {
                         id: id
@@ -101,12 +102,12 @@ export default {
     display: flex;
     overflow: hidden;
     .category-menu {
-        width: 75px;
+        width: 70px;
         flex: 0 0 75px;
         height: 100%;
         .menu-item {
             height: 25px;
-            padding: 10px 0;
+            padding: 5px 0;
             font-size: 14px;
             display: flex;
             align-items: center;

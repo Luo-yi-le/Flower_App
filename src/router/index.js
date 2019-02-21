@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import store from './../store'
-
 
 const Page = r => require.ensure([], () => r(require('@/pages/page/page.vue')), 'page')
 const Home = r => require.ensure([], () => r(require('@/pages/home/home.vue')), 'home')
@@ -16,6 +14,7 @@ const Detail = r => require.ensure([], () => r(require('@/pages/detail/detail.vu
 const Category = r => require.ensure([], () => r(require('@/pages/category/category.vue')), 'category')
 const Cart = r => require.ensure([], () => r(require('@/pages/cart/cart.vue')), 'cart')
 const Order = r => require.ensure([], () => r(require('@/pages/order/order.vue')), 'order')
+const ProductAll = r => require.ensure([], () => r(require('@/pages/about/Products.vue')), 'products')
 Vue.use(Router)
 
 // export default new Router({
@@ -74,6 +73,14 @@ Vue.use(Router)
           title: '关于'
         },
         component: About
+      }
+      ,{
+        path: 'products',
+        name: 'products',
+        meta: {
+          title: '关于'
+        },
+        component: ProductAll
       }
       ,{
         path: 'address',

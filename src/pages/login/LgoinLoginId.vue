@@ -1,22 +1,16 @@
 <template>
   <div class="login"
        @keyup.enter="onLogin">
-    <div class="logo-wrap">
-      <img src="~@/assets/logo.png"
-           class="app-logo">
-      <h2 class="app-name">百花轩__账号登陆</h2>
+    <div class="logo-wrap" >
+      <span v-if="">
+        <img :src="'../../../static/img/user/'+userPor" class="app-logo">
+      </span>
+      <h2 class="app-name">{{userName}}</h2>
     </div>
+
     <group>
-      <x-input placeholder="登陆账号"
-               v-model="userName"
-      >
-        <!--is-type="china-mobile"-->
-      </x-input>
-      <x-input type="number"
-               placeholder="请输入密码"
-               v-model="userPassword">
-        <!--@on-enter="onLogin" -->
-      </x-input>
+      <x-input placeholder="登陆账号" v-model="userPhoneAndMailbox" @keyup.native="keyUpUserPor"></x-input>
+      <x-input type="number" placeholder="请输入密码" v-model="userPassword"></x-input>
     </group>
     <box gap="10px 10px" style="text-align:right">
       <p>
@@ -25,9 +19,7 @@
       </p>
     </box>
     <div style="padding:15px;margin-top:30px;">
-      <x-button @click.native="onLogin"
-                type="primary"> 登录
-      </x-button>
+      <x-button @click.native="userLogin" type="primary"> 登录</x-button>
     </div>
 
   </div>
@@ -51,6 +43,7 @@
     },
     data() {
       return {
+        userList: [],
         btnText: '发送验证码',
         disabled: false,
         time: 0,
@@ -58,35 +51,89 @@
         userName: '',
         userPassword: '',
         verifyCode: '',
-        smsCode: ''
+        smsCode: '',
+        userPhoneAndMailbox: '',
+        userPor:'',
+        defauliPro:''
       }
     }
     , methods: {
-      onLogin: function () {
-        const that = this;
+      // onLogin: function () {
+      //   const that = this;
+      //   const user = new URLSearchParams();
+      //   user.append('userName', that.userName);
+      //   user.append('userPassword', that.userPassword);
+      //   if (this.userName !== "" && this.userPassword !== "") {
+      //     this.$http.post(api.login, user)
+      //       .then(res => {
+      //        if (res.data.userName !== "") {
+      //           sessionStorage.setItem("userName", that.userName);
+      //           this.$vux.toast.show({
+      //             text: that.userName+'登陆成功'
+      //           })
+      //          console.log(that.userList=res.data.data)
+      //         this.$router.push("/page/home");
+      //        }
+      //       }).catch(error => {
+      //       //this.$Loading.error();
+      //       this.$vux.toast.text({
+      //         text: that.userName+'账号或者密码错误'
+      //       })
+      //       //console.log(error);
+      //     });
+      //   } else {
+      //     alert('账号或者密码错误');
+      //   }
+      // }
+      userLogin() {
+        this.$store.commit('axiosStart')
+        const that = this
         const user = new URLSearchParams();
-        user.append('userName', that.userName);
-        user.append('userPassword', that.userPassword);
-        if (this.userName !== "" && this.userPassword !== "") {
-          this.$http.post(api.login, user)
-            .then(res => {
-             // if (res.data.userName !== "") {
-                sessionStorage.setItem("userName", that.userName);
-                this.$vux.toast.show({
-                  text: that.userName+'登陆成功'
+        user.append('userPhoneAndMailbox', that.userPhoneAndMailbox);
+        this.$http.get(api.selectByUserPhoneAndMailbox, {params: {"userPhoneAndMailbox": that.userPhoneAndMailbox}})
+          .then((res) => {
+            that.userList = res.data.data
+            that.userPor=that.userList.userHeadPortrait;
+              {
+              if (that.userPassword !==res.data.data.userPassword) {
+                this.$vux.toast.hide({
+                  text: that.userPhoneAndMailbox + '密码错误'
                 })
-              this.$router.push("/page/home");
-             // }
-            }).catch(error => {
-            //this.$Loading.error();
-            this.$vux.toast.text({
-              text: that.userName+'账号或者密码错误'
-            })
-            //console.log(error);
-          });
-        } else {
-          alert('账号或者密码错误');
-        }
+              } else {
+                if (res.data.data.userPassword === this.userPassword) {
+                  that.userId=that.userList.userId;
+                  that.userName=that.userList.userName;
+                  sessionStorage.setItem("userPhoneAndMailbox", that.userPhoneAndMailbox);
+                  this.$vux.toast.show({
+                    text: that.userName + '登陆成功'
+                  })
+                  sessionStorage.setItem("userId", that.userId);
+                  sessionStorage.setItem("userName", that.userName);
+                  this.$router.push("/page/home");
+                }
+              }
+            }
+          }).catch((err)=>{
+            console.log(err)
+        })
+      }
+      ,keyUpUserPor(){
+        const that = this
+        const user = new URLSearchParams();
+        user.append('userPhoneAndMailbox', that.userPhoneAndMailbox);
+        this.$http.get(api.selectByUserPhoneAndMailbox, {params: {"userPhoneAndMailbox": that.userPhoneAndMailbox}})
+          .then((res) => {
+            that.userList = res.data.data
+            if (res.data.data!==null) {
+              that.userPor=that.userList.userHeadPortrait;
+              that.userName=that.userList.userName;
+            }
+            else {
+              that.defauliPro='../../../static/img/flower/9012055.jpg'
+            }
+          }).catch((err)=>{
+          console.log(err)
+        })
       }
     }
   }
@@ -94,8 +141,6 @@
 
 
 <style scoped lang="less">
-  /*@import '~iview/dist/styles/iview.css';*/
-
   .login {
     height: 100%;
     text-align: center;
