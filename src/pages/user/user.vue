@@ -18,6 +18,7 @@
           <div class="text-row">
             {{address.consigneeName}}&nbsp;&nbsp;{{address.consigneePhone}}&nbsp;&nbsp;
             {{address.address}}&nbsp;&nbsp;{{address.detailedAddress}}
+            <label class="address" v-if="address.stateId==11">默认地址</label>
           </div>
           <!--<div class="text-row"></div>-->
           <!--<div class="text-row"></div>-->
@@ -45,13 +46,13 @@
                 <img :src="'../../../static/img/flower/'+show.flower.flowerImageName">
               </div>
               <!--<div class="item-middle">-->
-                <!--&lt;!&ndash;<div>&ndash;&gt;-->
-                  <!--&lt;!&ndash;{{show.cartId}}&ndash;&gt;-->
-                <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                <!--<div>-->
-                  <!--&lt;!&ndash;{{show.index(1)}}&ndash;&gt;-->
-                  <!--件商品-->
-                <!--</div>-->
+              <!--&lt;!&ndash;<div>&ndash;&gt;-->
+              <!--&lt;!&ndash;{{show.cartId}}&ndash;&gt;-->
+              <!--&lt;!&ndash;</div>&ndash;&gt;-->
+              <!--<div>-->
+              <!--&lt;!&ndash;{{show.index(1)}}&ndash;&gt;-->
+              <!--件商品-->
+              <!--</div>-->
               <!--</div>-->
             </span>
             <div class="item-right">
@@ -128,14 +129,20 @@
           .then(res => {
             that.orderInfo = res.data.data;
             console.log(that.orderInfo);
-             that.list=res.data.data.orderflowerList
+            that.list = res.data.data.orderflowerList
             // console.log( that.list=res.data.data.orderflowerList)
           }).catch(err => {
           console.log(err)
         })
-      }
+      },
+
     }
 
+    ,watch:{
+      $route(to,from){
+        console.log(to.path);
+      }
+    }
     , filters: {
       formatMoney(value) {
         return '￥' + value
@@ -346,5 +353,11 @@
         background: #fff;
       }
     }
+  }
+  .address{
+    display:block;
+    width:15rem;
+    text-align:right;
+    color: #ec8b89
   }
 </style>

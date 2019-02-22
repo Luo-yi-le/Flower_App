@@ -24,3 +24,8 @@ export const selectAllOrder='/order/selectAllOrder'
 export const selectAllCart='/cart/selectAllCart'
 //修改购物车的数据
 export const updateCartAmount='/cart/updateCartAmount'
+
+//显示收藏
+export const selectCollectOne='/collect/selectCollectOne'
+//添加收藏
+export const insertCollect='/collect/insertCollect'

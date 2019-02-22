@@ -2,11 +2,13 @@
   <div class="detail">
     <div class="detail-main" v-for="pro in product">
       <!-- v-if="product"-->
-      <div class="fixed-cart-box" @click="linkToCart" :class="[isShake ?'animate':'']">
-        <img src="../../../static/img/icon/cart@top.png" alt="icon-cart" ref="topCart">
-        <span class="total-count">1</span>
-        <!--{{this.totalCount}}-->
-        <!-- v-if="this.totalCount>0"-->
+      <div class="fixed-cart-box" >
+        <img src="../../../static/img/icon/cart@top.png" alt="icon-cart" ref="topCart"
+             @click="linkToCart" :class="[isShake ?'animate':'']">
+        <span class="total-count" v-if="cartList.length>0">{{cartList.length}}</span>
+        <span class="total-count" v-else>0</span>
+        <label v-if="collectCount>0" style="font-size: 0.8rem">已收藏</label>
+        <label v-else style="font-size: 0.8rem" @click="insertCollect">收藏</label>
       </div>
       <div class="detail-img">
         <img :src="'./../../../static/img/flower/'+pro.flowerImageName" alt="image">
@@ -14,8 +16,9 @@
       <div class="cart-box">
         <div class="product-counts">
           <span class="counts-tips">数量</span>
-          <popup-picker :data="countsArray" v-model="count" class="picker" popup-title="请选择数量"
-                        value-text-align="left"></popup-picker>
+          <popup-picker :data="countsArray" v-model="count" class="picker"
+                        popup-title="请选择数量" value-text-align="left">
+          </popup-picker>
         </div>
         <div class="middle-border"></div>
         <div class="add-cart-btn" @touchstart="onAddToCart">
@@ -26,21 +29,23 @@
         </div>
       </div>
       <div class="product-info-box">
-        <div class="stock" v-if="pro.state.stateId==2">已上架</div>
-        <div class="stock no" v-else>已下架</div>
+        <!--<div class="stock" v-if="pro.state.stateId==2">已上架</div>-->
+        <!--<div class="stock no" v-else>已下架</div>-->
+        <div class="stock">库存：{{pro.flowerInventory}}件</div>
         <div class="name">{{pro.flowerName}}</div>
         <div class="price">{{pro.flowerPrice|formatMoney}}</div>
       </div>
     </div>
     <div class="detail-bottom">
       <tab :line-width=2 active-color='#AB956D' v-model="index">
-        <tab-item class="vux-center" :selected="selectd === item" v-for="(item, index) in list"
-                  @click="selectd = item" :key="index">{{item}}
+        <tab-item class="vux-center" :selected="selectd === item"
+                  v-for="(item, index) in list" @click="selectd = item" :key="index">
+          {{item}}
         </tab-item>
       </tab>
       <swiper v-model="index" height="auto" :show-dots="false">
-        <swiper-item v-for="(item, index) in list" :key="index">
-          <div class="tab-swiper vux-center">{{product}}</div>
+        <swiper-item v-for="(item, index) in product" :key="index">
+          <div class="tab-swiper vux-center">{{item}}</div>
         </swiper-item>
       </swiper>
     </div>
@@ -51,9 +56,11 @@
   import {PopupPicker, Tab, TabItem, Swiper, SwiperItem} from 'vux'
   import {mapState, mapMutations, mapGetters} from 'vuex'
   import * as api from '../../../static/js/api/api.js'
+  import XSwitch from "vux/src/components/x-switch/index";
 
   const tabList = () => ['商品详情', '产品参数',]
   export default {
+    inject:['reload'],
     name: 'detail',
     data() {
       return {
@@ -64,7 +71,9 @@
         selectd: '商品详情',
         index: 0,
         isFly: false,
-        isShake: false
+        isShake: false,
+        cartList: [],
+        collectCount:[]
       }
     },
     computed: {
@@ -73,9 +82,17 @@
       }
     },
     created() {
+      this.seleteCartCount()
+      this.selectCollectOne()
     },
     activated() {
       this.getAllProducts()
+    },
+    watch: {
+      '$route'(to, from) {
+        this.id = this.$route.params.id;
+        this.seleteCartCount();
+      }
     },
     methods: {
       linkToCart() {
@@ -99,10 +116,56 @@
             // })
             // console.log(detailData)
             //that.product = detailData[0]
-          }).catch((err)=>{
-            console.log(err)
+          }).catch((err) => {
+          console.log(err)
         })
       },
+      seleteCartCount() {
+        let that = this
+        let userId = sessionStorage.getItem('userId')
+        that.$http.post(api.selectAllCart, {userId: userId})
+          .then((res) => {
+            that.cartList = res.data.data
+            console.log(that.cartList)
+          }).catch((err) => {
+          console.log(err)
+        })
+      },
+      selectCollectOne() {
+        let that = this
+        let userId = sessionStorage.getItem('userId')
+        let flowerId = this.$route.query.id
+        that.$http.get(api.selectCollectOne, {
+          params: {
+            userId: userId,
+            flowerId: flowerId
+          }
+        }).then((res)=>{
+          that.collectCount=res.data.data
+          console.log(that.collectCount)
+        }).catch((err)=>{
+
+        })
+      },
+      insertCollect(){
+        let that = this
+        let userId = sessionStorage.getItem('userId')
+        let flowerId = this.$route.query.id
+        that.$http.get(api.insertCollect, {
+          params: {
+            userId: userId,
+            flowerId: flowerId
+          }
+        }).then((res)=>{
+          this.$vux.toast.show({
+            text:'收藏成功'
+          })
+          setTimeout(()=>{ location.reload() }, 1000);
+        }).catch((err)=>{
+          console.log(err)
+        })
+      }
+      ,
       onAddToCart() {
         // 如果没登录，先去登录
         if (!this.userInfo) {
@@ -144,7 +207,19 @@
         }, 1000)
       }
     },
+    watch: {
+      // 如果路由有变化，会再次执行该方法
+      $route: {
+        handler: function(val, oldVal){
+          //console.log(val);
+          location.reload()
+        },
+        // 深度观察监听
+        deep: true,
+      }
+    },
     components: {
+      XSwitch,
       PopupPicker,
       Tab,
       TabItem,

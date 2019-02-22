@@ -4,8 +4,9 @@
     <section>
       <div class="weui-cells">
         <router-link to="" class="weui-cell weui-cell_access">
-          <div class="weui-cell__bd">余额</div>
-          <div class="weui-cell__ft" style="color: #2baee9">已保护</div>
+          <div class="weui-cell__bd">我的收藏</div>
+          <div class="weui-cell__ft"></div>
+          <!--<div class="weui-cell__ft" style="color: #2baee9">已保护</div>-->
         </router-link>
       </div>
       <div class="weui-cells">

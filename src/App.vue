@@ -4,8 +4,9 @@
     <loading :text="loadText" v-model="isLoading"></loading>
   </div>
   <keep-alive>
-    <router-view/>
+    <router-view v-if="$route.meta.keepAlive"></router-view>
   </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive"></router-view>
 </div>
 </template>
 
@@ -17,15 +18,32 @@ export default {
   directives: {
     TransferDom
   },
+  provide(){
+    return{
+      reload:this.reload
+    }
+  }
+  ,
   components: {
     Loading,
     TransferDom
   },
   data(){
     return {
-      loadText:"loading"
+      loadText:"loading",
+      isRouterAlive:true
     }
   },
+
+  methods:{
+    reload(){
+      this.isRouterAlive=false
+      this.$nextTick(()=>{
+        this.isRouterAlive = true
+      })
+    }
+  }
+  ,
   computed:{
     ...mapState({
       isLoading: state => state.onLoading.isLoading

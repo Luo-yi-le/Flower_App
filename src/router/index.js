@@ -35,7 +35,7 @@ Vue.use(Router)
         path: 'home',
         name: 'home',
         meta: {
-          title: '百花轩'
+          title: '百花轩',
         },
         component: Home
       }
@@ -43,7 +43,7 @@ Vue.use(Router)
         path: 'user',
         name: 'user',
         meta: {
-          title: '我的'
+          title: '我的',
           // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: User
@@ -52,7 +52,7 @@ Vue.use(Router)
         path: 'userInfo',
         name: 'userInfo',
         meta: {
-          title: '我的信息'
+          title: '我的信息',
           // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: UserInfo
@@ -61,7 +61,8 @@ Vue.use(Router)
         path: 'setUp',
         name: 'setUp',
         meta: {
-          title: '我的账户'
+          title: '我的账户',
+
           // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: SetUp
@@ -78,7 +79,7 @@ Vue.use(Router)
         path: 'products',
         name: 'products',
         meta: {
-          title: '关于'
+          title: '全部商品'
         },
         component: ProductAll
       }
@@ -153,6 +154,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   // 设置标题
   document.title = to.meta.title
+
     //store.commit('UPDATE_TITLE',to.meta.title)
   // loading
   //store.commit('UPDATE_LOADING', true)
@@ -170,8 +172,12 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
-
-router.afterEach(function(to) {
+router.beforeResolve((to, from, next) => {
+  next(()=>{
+    window.location.reload()
+  })
+})
+router.afterEach(function(to,from) {
   setTimeout(() => {
     //store.commit('UPDATE_LOADING', false)
   }, 300)

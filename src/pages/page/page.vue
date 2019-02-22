@@ -60,6 +60,16 @@
         title: '头部'
       }
     },
+    watch: {
+      // 如果路由有变化，会再次执行该方法
+      $route: {
+        handler: function(val, oldVal){
+          location.reload()
+        },
+        // 深度观察监听
+        deep: true,
+      }
+    },
     created() {
     },
     computed: {

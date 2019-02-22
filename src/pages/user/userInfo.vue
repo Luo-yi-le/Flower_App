@@ -85,11 +85,11 @@
     }
     , methods: {
       showUser() {
-        const userId=sessionStorage.getItem("userId");
+        const userPhoneAndMailbox=sessionStorage.getItem("userPhoneAndMailbox");
         // const info = new URLSearchParams();
         // info.append('userId', userId);
         const that = this;
-        that.$http.post(api.selectUserId,{userId:userId})
+        that.$http.get(api.selectByUserPhoneAndMailbox,{params: {"userPhoneAndMailbox": userPhoneAndMailbox}})
           .then(res=> {
             that.userInfo = res.data.data;
             console.log(that.userInfo = res.data.data);
