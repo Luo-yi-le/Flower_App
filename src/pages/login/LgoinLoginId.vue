@@ -1,7 +1,7 @@
 <template>
   <div class="login"
        @keyup.enter="onLogin">
-    <div class="logo-wrap" >
+    <div class="logo-wrap">
       <span v-if="">
         <img :src="'../../../static/img/user/'+userPor" class="app-logo">
       </span>
@@ -26,10 +26,8 @@
 </template>
 
 <script>
-
   import * as api from '../../../static/js/api/api.js'
   import {XInput, Group, XButton, Cell, Toast, base64, Box, Msg} from 'vux'
-
   export default {
     name: "Login",
     components: {
@@ -53,85 +51,99 @@
         verifyCode: '',
         smsCode: '',
         userPhoneAndMailbox: '',
-        userPor:'',
-        defauliPro:''
+        userPor: '',
+        defauliPro: '',
+        cartAllList:[]
       }
+    },
+    activated() {
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('userInfo')
+      sessionStorage.removeItem('cartAllList')
+      this.UPDATE_USERINFO({
+        userInfo: null
+      })
+    },
+    created(){
+      // this.getCookie()
+      // console.log(this.getCookie())
+      // setTimeout(()=>{
+      //
+      // },1400)
     }
     , methods: {
-      // onLogin: function () {
-      //   const that = this;
-      //   const user = new URLSearchParams();
-      //   user.append('userName', that.userName);
-      //   user.append('userPassword', that.userPassword);
-      //   if (this.userName !== "" && this.userPassword !== "") {
-      //     this.$http.post(api.login, user)
-      //       .then(res => {
-      //        if (res.data.userName !== "") {
-      //           sessionStorage.setItem("userName", that.userName);
-      //           this.$vux.toast.show({
-      //             text: that.userName+'登陆成功'
-      //           })
-      //          console.log(that.userList=res.data.data)
-      //         this.$router.push("/page/home");
-      //        }
-      //       }).catch(error => {
-      //       //this.$Loading.error();
-      //       this.$vux.toast.text({
-      //         text: that.userName+'账号或者密码错误'
-      //       })
-      //       //console.log(error);
-      //     });
-      //   } else {
-      //     alert('账号或者密码错误');
-      //   }
-      // }
       userLogin() {
         this.$store.commit('axiosStart')
         const that = this
         const user = new URLSearchParams();
         user.append('userPhoneAndMailbox', that.userPhoneAndMailbox);
-        this.$http.get(api.selectByUserPhoneAndMailbox, {params: {"userPhoneAndMailbox": that.userPhoneAndMailbox}})
-          .then((res) => {
-            that.userList = res.data.data
-            that.userPor=that.userList.userHeadPortrait;
-              {
-              if (that.userPassword !==res.data.data.userPassword) {
+        this.$http.get(api.appLogin, {
+          params: {"userPhoneAndMailbox": that.userPhoneAndMailbox}
+        }).then((res) => {
+            //console.log(res.data.token)
+            that.userList = res.data.userInfoList
+              if (that.userPassword !== res.data.userInfoList.userPassword) {
                 this.$vux.toast.hide({
-                  text: that.userPhoneAndMailbox + '密码错误'
+                  text: that.userPhoneAndMailbox + '用户密码错误！'
                 })
               } else {
-                if (res.data.data.userPassword === this.userPassword) {
-                  that.userId=that.userList.userId;
-                  that.userName=that.userList.userName;
+                if (res.data.userInfoList.userPassword === this.userPassword) {
+                  that.userId = that.userList.userId;
+                  that.userName = that.userList.userName;
                   sessionStorage.setItem("userPhoneAndMailbox", that.userPhoneAndMailbox);
                   this.$vux.toast.show({
                     text: that.userName + '登陆成功'
                   })
+                  window.sessionStorage.setItem('token',res.data.token)
+                  window.sessionStorage.setItem('userInfo', JSON.stringify(res.data.userInfoList))
                   sessionStorage.setItem("userId", that.userId);
                   sessionStorage.setItem("userName", that.userName);
-                  this.$router.push("/page/home");
+                  // 重定向到首页或者登录前的页面
+                  let redirect = decodeURIComponent(
+                    this.$route.query.redirect || '/'
+                  )
+                  setTimeout(() => {
+                    that.selectAllCart()
+                    this.$router.push({
+                      path: redirect
+                    })
+                  }, 1500)
                 }
               }
-            }
-          }).catch((err)=>{
-            console.log(err)
+          }).catch((err) => {
+          console.log(err)
         })
       }
-      ,keyUpUserPor(){
+      , keyUpUserPor() {
         const that = this
         const user = new URLSearchParams();
         user.append('userPhoneAndMailbox', that.userPhoneAndMailbox);
-        this.$http.get(api.selectByUserPhoneAndMailbox, {params: {"userPhoneAndMailbox": that.userPhoneAndMailbox}})
+        this.$http.get(api.selectByUserPhoneAndMailbox, {params:
+            {"userPhoneAndMailbox": that.userPhoneAndMailbox}
+        })
           .then((res) => {
             that.userList = res.data.data
-            if (res.data.data!==null) {
-              that.userPor=that.userList.userHeadPortrait;
-              that.userName=that.userList.userName;
+            if (res.data.data !== null) {
+              that.userPor = that.userList.userHeadPortrait;
+              that.userName = that.userList.userName;
+              sessionStorage.setItem("userHeadPortrait",that.userPor)
+            } else {
+              that.defauliPro = '../../../static/img/flower/9012055.jpg'
             }
-            else {
-              that.defauliPro='../../../static/img/flower/9012055.jpg'
-            }
-          }).catch((err)=>{
+          }).catch((err) => {
+          console.log(err)
+        })
+      }
+      , selectAllCart() {
+      //  const userId = sessionStorage.getItem('userId')
+        let that = this
+        that.$http.post(api.selectAllCart, {
+          'userId': that.userId
+        }).then((res) => {
+          that.cartAllList = res.data.data
+          //console.log(that.cartAllList)
+          sessionStorage.setItem("cartAllList",JSON.stringify(that.cartAllList))
+        }).catch((err) => {
           console.log(err)
         })
       }

@@ -1,15 +1,12 @@
 <template>
   <div class="cart">
     <div v-if="cartAllList.length>0">
-      <!--v-if="this.cartData.length>0"-->
       <div class="cart-box">
         <div class="cart-item vux-1px-b" v-for="(item,index) in cartAllList" :key="index">
           <div class="cart-item-main">
             <div class="cart-item-checkbox" @click="toggleSelect(item.cartId)">
               <i class="icon_checkbox" v-if="item.isChecked"></i>
-
               <i class="icon_checkbox checked" v-else></i>
-              <!--v-else-->
             </div>
             <div class="cart-item-image" @click="linkToDetail(item.cartId)">
               <img :src="'./../../../static/img/flower/'+item.flower.flowerImageName" alt="img">
@@ -18,7 +15,7 @@
             <div class="cart-item-ctrl">
               <div class="title-box">
                 <span class="title">{{item.flower.flowerName}}</span>
-                <span class="price">{{item.flower.flowerPrice|formatMoney}}</span>
+                <span class="price" style="color: #ec8b89">{{item.flower.flowerPrice|formatMoney}}</span>
               </div>
               <div class="bottom-box">
                 <div class="cart-item-counts">
@@ -36,10 +33,9 @@
       <div class="cart-footer">
         <div class="all-select" @click="toggleAllCheck">
           <img src="../../../static/img/icon/all@selected.png"
-
                alt="all">
           <!-- v-if="this.cartData.length===this.selectedArr.length"-->
-          <img src="../../../static/img/icon/all.png" alt="">
+          <img src="../../../static/img/icon/all.png" alt="" >
           <!--v-else-->
           <span>全选()</span>
           <!--{{this.selectedArr.length}}-->
@@ -78,26 +74,26 @@
     computed: {
       ...mapGetters(['cartAllList', 'tolalPrice', 'selectedArr']),
       allChecked() {
-        return this.selectedArr.length === this.cartAllList.length
+        return this.selectedArr.length ===this.cartAllList.length
       }
     },
     created() {
-      this.selectAllCart()
+     this.selectAllCart()
     },
     methods: {
-      // ...mapMutations([
-      //   'TOGGLE_STATUS',
-      //   'DELETE_PRODUCT',
-      //   'ADD_PRODUCT',
-      //   'CUT_PRODUCT',
-      //   'TOGGLE_ALLCHEK'
-      // ]),
+      ...mapMutations([
+        'TOGGLE_STATUS',
+        'DELETE_PRODUCT',
+        'ADD_PRODUCT',
+        'CUT_PRODUCT',
+        'TOGGLE_ALLCHEK'
+      ]),
       linkToDetail(id) {
         this.$router.push({path: '/page/detail', query: {id: id}})
       },
-      findIndexById(id) {
+      findIndexById(cartId) {
         return this.cartAllList.findIndex(item => {
-          return item.cartId === id
+          return item.cartId ===cartId
         })
       },
       toggleSelect(id) {
@@ -105,8 +101,12 @@
         this.TOGGLE_STATUS({index: index})
       },
       del(id) {
-        let index = this.findIndexById(id)
-        this.DELETE_PRODUCT({index: index})
+        let cartId = this.findIndexById(id)
+        let that=this
+        // that.$http.post(api.deleteCart,{
+        //   cartId:index
+        // })
+        console.log(cartId)
       },
       add(id) {
         let index = this.findIndexById(id)
@@ -132,7 +132,6 @@
           'userId': userId
         }).then((res) => {
           that.cartAllList = res.data.data
-          that.flowerList = res.data.data.flower
           console.log(that.cartAllList)
         }).catch((err) => {
           console.log(err)
@@ -328,6 +327,7 @@
             width: 20%;
             font-size: 14px;
             margin-left: 5px;
+
           }
 
           .arrow-icon {
@@ -357,9 +357,10 @@
     }
   }
   .userName{
-    font: 0.8rem;
-    width: 20rem;
-    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    width: 15rem;
+    margin-top: 0.8rem;
     color: lime;
+    margin-right: -8rem;
   }
 </style>

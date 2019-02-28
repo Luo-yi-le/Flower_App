@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import router from './../router'
+import router from '../router'
 import axios from 'axios'
+
 Vue.use(Vuex)
 
 const store = new Vuex.Store({})
 //处理头部请求
-// axios.defaults.headers = {
-//   "Content-Type": "application/x-www-form-urlencoded"
-// }
+axios.defaults.headers = {
+  "Content-Type": "application/x-www-form-urlencoded"
+}
 
 //拦截request,设置全局请求
 axios.interceptors.request.use(config => {

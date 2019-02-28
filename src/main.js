@@ -3,13 +3,16 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import storeIndex from './store'
-
+import storeIndex from './store/index'
 import store from './store/loading.js'
 import http from './common/js/http.js'
+
+
+
 import { AlertPlugin, ToastPlugin } from 'vux'
 Vue.use(AlertPlugin);
 Vue.use(ToastPlugin);
+
 Vue.use(http)
 import $ from 'jquery';
 window.jQuery = $;

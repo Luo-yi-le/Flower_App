@@ -8,23 +8,25 @@
       {{userName}}
       <router-link to="/page/setUp" class="nickname1">我的信息</router-link>
     </div>
-    <div class="user-address"
-         @click="editAddress()">
-      <div class="address-info"
-      >
+    <div class="user-address">
+      <div class="address-info">
         <!--   v-if="this.userInfo.addressInfo"-->
         <h5 class="address-title">地址管理<i class="icon-arrow"></i></h5>
         <div class="address-main" v-for="address in addressList">
-          <div class="text-row">
+          <div class="text-row" v-if="address.stateId==11">
             {{address.consigneeName}}&nbsp;&nbsp;{{address.consigneePhone}}&nbsp;&nbsp;
             {{address.address}}&nbsp;&nbsp;{{address.detailedAddress}}
-            <label class="address" v-if="address.stateId==11">默认地址</label>
+            <!--<label class="address">默认地址</label>-->
+            <!--<div class="switch-container">-->
+              <!--<input type="checkbox" id="user-switch-yes" v-model="yes">-->
+              <!--<label for="user-switch-yes"></label>-->
+            <!--</div>-->
           </div>
           <!--<div class="text-row"></div>-->
           <!--<div class="text-row"></div>-->
         </div>
       </div>
-      <div class="add-new-address">
+      <div class="add-new-address" @click="editAddress()">
         <!--  v-else-->
         <i class="icon-add">+</i>
         <span>添加地址</span>
@@ -78,20 +80,26 @@
 <script>
   import * as api from '../../../static/js/api/api'
   import {mapGetters} from 'vuex'
+  import XSwitch from "vux/src/components/x-switch/index";
 
   var userName = sessionStorage.getItem("userName");
   export default {
     name: 'user',
+    components: {XSwitch},
     data() {
       return {
         userName: userName,
         addressList: [],
         orderInfo: [],
-        list: []
+        list: [],
+        yes: 11,
+        no: 12,
+        addressId: '',
+
       }
     },
     computed: {
-      // ...mapGetters(['userInfo']),
+      ...mapGetters(['userInfo']),
       totalDetail() {
         // return this.userInfo.addressInfo.cityVal + ' ' + this.userInfo.addressInfo.detail
       }
@@ -99,8 +107,8 @@
     mounted() {
     },
     created() {
-      this.selectAddress()
-      this.selectAllOrder()
+      this.selectAddress();
+      this.selectAllOrder();
     },
     methods: {
       editAddress() {
@@ -112,7 +120,9 @@
         that.$http.post(api.selectAllAddress, {"userId": userId})
           .then(res => {
             that.addressList = res.data.data;
-            console.log(that.addressList);
+            that.addressId = that.addressList.addressId
+            console.log(that.addressList = res.data.data)
+            console.log(that.addressId)
           }).catch(res => {
           console.log(res);
         })
@@ -128,18 +138,23 @@
         })
           .then(res => {
             that.orderInfo = res.data.data;
-            console.log(that.orderInfo);
             that.list = res.data.data.orderflowerList
             // console.log( that.list=res.data.data.orderflowerList)
           }).catch(err => {
           console.log(err)
         })
       },
+      updateAddressStateId() {
+        let that = this
+        that.$http.post(api.updateAddressStateId, {
+          params: {}
+        })
+      }
 
     }
 
-    ,watch:{
-      $route(to,from){
+    , watch: {
+      $route(to, from) {
         console.log(to.path);
       }
     }
@@ -354,10 +369,55 @@
       }
     }
   }
-  .address{
-    display:block;
-    width:15rem;
-    text-align:right;
-    color: #ec8b89
+
+  .address {
+    display: block;
+    width: 20rem;
+    text-align: right;
+    color: #ec8b89;
+  }
+
+  .switch-container {
+    height: 25px;
+    width: 48px;
+    display: inline-block;
+    overflow: hidden
+  }
+
+  .switch-container input {
+    display: none
+  }
+
+  .switch-container label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .25);
+    cursor: pointer;
+    border-radius: 25px;
+    transition: all .4s ease;
+  }
+
+  .switch-container label:before {
+    content: '';
+    display: block;
+    border-radius: 25px;
+    height: 21px;
+    width: 21px;
+    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.08);
+    transition: all .4s ease;
+    background-color: #fff;
+    position: relative;
+    right: -2px;
+    top: 2px;
+  }
+
+  .switch-container input:checked ~ label:before {
+    right: -25px;
+    background-color: #FCC118;
+  }
+
+  .switch-container input:checked ~ label {
+    background-color: #1890ff;
   }
 </style>

@@ -5,6 +5,7 @@
     </div>
     <view-box ref="viewBox" body-padding-top="46px" :body-padding-bottom="isPaddingBottom">
       <x-header slot="header" @on-click-more="onClickMore" :left-options="leftOptions" :right-options="rightOptions"
+                :title="title"
                 style="width:100%;position:absolute;left:0;top:0;z-index:100;">
       </x-header>
 
@@ -25,7 +26,7 @@
           <span class="icon icon-cart" slot="icon"></span>
           <span slot="label">购物车</span>
         </tabbar-item>
-        <tabbar-item link="/page/user" :selected="$route.path === '/page/user'">
+        <tabbar-item link="/page/my" :selected="$route.path === '/page/user'">
           <span class="icon icon-user" slot="icon"></span>
           <span slot="label">我的</span>
         </tabbar-item>
@@ -44,7 +45,6 @@
     TransferDom
   } from 'vux'
   import {mapState} from 'vuex'
-
   export default {
     name: 'page',
     directives: {
@@ -57,7 +57,6 @@
           menu1: '关于 花之轩',
           menu2: '退出登录'
         },
-        title: '头部'
       }
     },
     watch: {
@@ -73,10 +72,10 @@
     created() {
     },
     computed: {
-
+      ...mapState(['title']),
       leftOptions() {
         return {
-          showBack: this.$route.path !== ''
+          showBack: this.$route.path !== '/page/home'
         }
       },
       rightOptions() {

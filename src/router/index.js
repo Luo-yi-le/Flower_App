@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import storeIndex from '../store/index.js'
 
 const Page = r => require.ensure([], () => r(require('@/pages/page/page.vue')), 'page')
 const Home = r => require.ensure([], () => r(require('@/pages/home/home.vue')), 'home')
@@ -8,7 +9,10 @@ const LoginPhone = r => require.ensure([], () => r(require('@/pages/login/PhoneL
 const User = r => require.ensure([], () => r(require('@/pages/user/user.vue')), 'user')
 const SetUp = r => require.ensure([], () => r(require('@/pages/user/setUp.vue')), 'setUp')
 const UserInfo = r => require.ensure([], () => r(require('@/pages/user/userInfo.vue')), 'userInfo')
+const My = r => require.ensure([], () => r(require('@/pages/user/my.vue')), 'my')
+const MyCollection = r => require.ensure([], () => r(require('@/pages/user/myCollection.vue')), 'myCollection')
 const About = r => require.ensure([], () => r(require('@/pages/about/about.vue')), 'about')
+const addAddress = r => require.ensure([], () => r(require('@/pages/address/addAddress.vue')), 'addAddress')
 const Address = r => require.ensure([], () => r(require('@/pages/address/address.vue')), 'address')
 const Detail = r => require.ensure([], () => r(require('@/pages/detail/detail.vue')), 'detail')
 const Category = r => require.ensure([], () => r(require('@/pages/category/category.vue')), 'category')
@@ -44,16 +48,34 @@ Vue.use(Router)
         name: 'user',
         meta: {
           title: '我的',
-          // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+           requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: User
+      }
+      ,{
+        path: 'my',
+        name: 'my',
+        meta: {
+          title: '我的',
+          //requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+        },
+        component: My
+      },
+      ,{
+        path: 'myCollection',
+        name: 'myCollection',
+        meta: {
+          title: '我的收藏',
+          requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+        },
+        component: MyCollection
       }
       ,{
         path: 'userInfo',
         name: 'userInfo',
         meta: {
           title: '我的信息',
-          // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+          requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: UserInfo
       }
@@ -62,8 +84,7 @@ Vue.use(Router)
         name: 'setUp',
         meta: {
           title: '我的账户',
-
-          // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+           requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: SetUp
       }
@@ -87,17 +108,26 @@ Vue.use(Router)
         path: 'address',
         name: 'address',
         meta: {
-          title: '地址'
-          // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+          title: '我的地址',
+          requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: Address
+      }
+      ,{
+        path: 'addAddress',
+        name: 'addAddress',
+        meta: {
+          title: '地址',
+           requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+        },
+        component: addAddress
       }
       ,{
         path: 'detail',
         name: 'detail',
         meta: {
-          title: '详细'
-          // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+          title: '详细',
+          requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: Detail
       },
@@ -113,7 +143,8 @@ Vue.use(Router)
         path: 'cart',
         name: 'cart',
         meta: {
-          title: '购物车'
+          title: '购物车',
+         requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: Cart
       }
@@ -121,7 +152,8 @@ Vue.use(Router)
         path: 'order',
         name: 'order',
         meta: {
-          title: '订单信息'
+          title: '订单信息',
+          requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: Order
       },
@@ -154,17 +186,16 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   // 设置标题
   document.title = to.meta.title
-
-    //store.commit('UPDATE_TITLE',to.meta.title)
+  storeIndex.commit('UPDATE_TITLE',to.meta.title)
   // loading
-  //store.commit('UPDATE_LOADING', true)
+  storeIndex.commit('UPDATE_LOADING', true)
   if (to.matched.some(r => r.meta.requireAuth)) {
-    let token = window.localStorage.getItem('token')
+    let token = window.sessionStorage.getItem('token')
     if (token) {
       next()
     } else {
       next({
-        path: '/login',
+        path: '/loginLoginId',
         query: { redirect: to.fullPath }
       })
     }
@@ -172,14 +203,14 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
-router.beforeResolve((to, from, next) => {
-  next(()=>{
-    window.location.reload()
-  })
-})
+// router.beforeResolve((to, from, next) => {
+//   next(()=>{
+//     window.location.reload()
+//   })
+// })
 router.afterEach(function(to,from) {
   setTimeout(() => {
-    //store.commit('UPDATE_LOADING', false)
+    storeIndex.commit('UPDATE_LOADING', false)
   }, 300)
 })
  export default router

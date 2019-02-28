@@ -2,12 +2,12 @@
   <div class="detail">
     <div class="detail-main" v-for="pro in product">
       <!-- v-if="product"-->
-      <div class="fixed-cart-box" >
+      <div class="fixed-cart-box">
         <img src="../../../static/img/icon/cart@top.png" alt="icon-cart" ref="topCart"
              @click="linkToCart" :class="[isShake ?'animate':'']">
-        <span class="total-count" v-if="cartList.length>0">{{cartList.length}}</span>
+        <span class="total-count" v-if="cartAllList.length>0">{{cartAllList.length}}</span>
         <span class="total-count" v-else>0</span>
-        <label v-if="collectCount>0" style="font-size: 0.8rem">已收藏</label>
+        <label v-if="collectCount>0" style="font-size: 0.8rem" @click="deleteCollect()">已收藏</label>
         <label v-else style="font-size: 0.8rem" @click="insertCollect">收藏</label>
       </div>
       <div class="detail-img">
@@ -21,7 +21,7 @@
           </popup-picker>
         </div>
         <div class="middle-border"></div>
-        <div class="add-cart-btn" @touchstart="onAddToCart">
+        <div class="add-cart-btn" @touchstart="insertCart">
           <span class="add-cart">加入购物车</span>
           <i class="icon-cart"></i>
           <img class="small-top-img" ref="smallTopImg" src="./../../../static/img/flower/9012177.jpg"
@@ -60,23 +60,27 @@
 
   const tabList = () => ['商品详情', '产品参数',]
   export default {
-    inject:['reload'],
+    inject: ['reload'],
     name: 'detail',
     data() {
       return {
         product: [],
         countsArray: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]],
-        count: ['1'],
+        count: ["1"],
         list: tabList(),
         selectd: '商品详情',
         index: 0,
         isFly: false,
         isShake: false,
-        cartList: [],
-        collectCount:[]
+        cartAllList: [],
+        collectCount: [],
+        collect:[],
+        collectId:''
       }
     },
     computed: {
+      ...mapState(['userInfo']),
+      ...mapGetters(['totalCount']),
       isDisabled() {
         return this.product.stock > 0
       }
@@ -84,6 +88,7 @@
     created() {
       this.seleteCartCount()
       this.selectCollectOne()
+      this.selectCollect()
     },
     activated() {
       this.getAllProducts()
@@ -95,6 +100,7 @@
       }
     },
     methods: {
+      ...mapMutations(['ADD_TO_CART']),
       linkToCart() {
         this.$router.push({path: '/page/cart'})
       },
@@ -125,8 +131,8 @@
         let userId = sessionStorage.getItem('userId')
         that.$http.post(api.selectAllCart, {userId: userId})
           .then((res) => {
-            that.cartList = res.data.data
-            console.log(that.cartList)
+            that.cartAllList = res.data.data
+            console.log(that.cartAllList)
           }).catch((err) => {
           console.log(err)
         })
@@ -140,14 +146,32 @@
             userId: userId,
             flowerId: flowerId
           }
-        }).then((res)=>{
-          that.collectCount=res.data.data
+        }).then((res) => {
+          that.collectCount = res.data.data
           console.log(that.collectCount)
-        }).catch((err)=>{
+        }).catch((err) => {
 
         })
       },
-      insertCollect(){
+      selectCollect() {
+        let that = this
+        let userId = sessionStorage.getItem('userId')
+        let flowerId = this.$route.query.id
+        that.$http.get(api.selectCollectId, {
+          params: {
+            userId: userId,
+            flowerId: flowerId
+          }
+        }).then((res) => {
+          that.collect = res.data.data
+          that.collectId=that.collect.collectId
+          console.log(that.collect)
+          console.log(that.collectId)
+        }).catch((err) => {
+
+        })
+      },
+      insertCollect() {
         let that = this
         let userId = sessionStorage.getItem('userId')
         let flowerId = this.$route.query.id
@@ -156,20 +180,57 @@
             userId: userId,
             flowerId: flowerId
           }
-        }).then((res)=>{
+        }).then((res) => {
+          console.log(res.data.data)
           this.$vux.toast.show({
-            text:'收藏成功'
+            text: '收藏成功'
           })
-          setTimeout(()=>{ location.reload() }, 1000);
-        }).catch((err)=>{
+          setTimeout(() => {
+            location.reload()
+          }, 1000);
+        }).catch((err) => {
           console.log(err)
         })
       }
-      ,
-      onAddToCart() {
+      ,deleteCollect(){
+        let that=this
+        that.$http.get(api.deleteCollect,{
+          params:{"collect":that.collectId}
+        }).then((res)=>{
+          this.$vux.toast.show({
+            text: '取消收藏'
+          })
+          setTimeout(() => {
+            location.reload()
+          }, 1000);
+        })
+      }
+      , insertCart() {
+        let userId = sessionStorage.getItem('userId')
+        let that = this
+        let flowerId = this.$route.query.id
+          that.$http.post(api.insertCart, {
+            // params: {
+            'flowerId': flowerId,
+            'userId': userId,
+            'cartAmount': this.count
+            //}
+          }).then((res) => {
+            if (res.data.msg == "success") {
+              this.$vux.toast.show({
+                text: '加入购物车成功'
+              })
+              setTimeout(() => {
+                location.reload()
+              }, 1000);
+            }
+          })
+      }
+
+      , onAddToCart() {
         // 如果没登录，先去登录
         if (!this.userInfo) {
-          this.$router.push({path: '/login'})
+          this.$router.push({path: '/loginLoginId'})
           return
         }
         // 缺货时禁止点击
@@ -210,7 +271,7 @@
     watch: {
       // 如果路由有变化，会再次执行该方法
       $route: {
-        handler: function(val, oldVal){
+        handler: function (val, oldVal) {
           //console.log(val);
           location.reload()
         },

@@ -16,6 +16,7 @@
     "fastclick": "^1.0.6",
     "iview": "^3.2.2",
     "jquery": "^3.3.1",
+    "js-cookie": "^2.2.0",
     "mescroll.js": "^1.4.0",
     "prerender-spa-plugin": "^3.4.0",
     "promise-limit": "^2.7.0",

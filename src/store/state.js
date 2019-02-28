@@ -1,9 +1,9 @@
 const state = {
-    userInfo: window.localStorage.getItem('userInfo')
-        ? JSON.parse(window.localStorage.getItem('userInfo'))
+    userInfo: window.sessionStorage.getItem('userInfo')
+        ? JSON.parse(window.sessionStorage.getItem('userInfo'))
         : null,
-  cartAllList: window.localStorage.getItem('cartAllList')
-        ? JSON.parse(localStorage.getItem('cartAllList'))
+  cartAllList: window.sessionStorage.getItem('cartAllList')
+        ? JSON.parse(sessionStorage.getItem('cartAllList'))
         : [],
     title: '花之轩',
     isLoading: false,
