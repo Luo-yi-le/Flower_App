@@ -18,6 +18,7 @@ const Detail = r => require.ensure([], () => r(require('@/pages/detail/detail.vu
 const Category = r => require.ensure([], () => r(require('@/pages/category/category.vue')), 'category')
 const Cart = r => require.ensure([], () => r(require('@/pages/cart/cart.vue')), 'cart')
 const Order = r => require.ensure([], () => r(require('@/pages/order/order.vue')), 'order')
+const Map = r => require.ensure([], () => r(require('@/pages/order/Map.vue')), 'map')
 const ProductAll = r => require.ensure([], () => r(require('@/pages/about/Products.vue')), 'products')
 Vue.use(Router)
 
@@ -57,7 +58,7 @@ Vue.use(Router)
         name: 'my',
         meta: {
           title: '我的',
-          //requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+          requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: My
       },
@@ -156,6 +157,15 @@ Vue.use(Router)
           requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
         },
         component: Order
+      },
+      {
+        path: 'map',
+        name: 'map',
+        meta: {
+          title: '地图',
+         // requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+        },
+        component: Map
       },
     ]
   }

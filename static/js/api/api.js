@@ -12,6 +12,13 @@ export const selectAllAddress='/address/selectAllAddress'
 export const updateAddressStateId='/address/updateAddressStateId'
 //根据地址id查询
 export const selectAddressId='/address/selectAddressId'
+//修改地址
+export const updateAddress='/address/updateAddress'
+//添加地址
+export const insertAddress='/address/insertAddress'
+//删除地址
+export const deleteAddress='/address/deleteAddress'
+
 
 
 /********鲜花用途********/

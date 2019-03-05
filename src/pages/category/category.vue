@@ -1,34 +1,25 @@
 <template>
     <div class="category">
         <ul class="category-menu vux-1px-r">
-            <li v-for="(item,index) in 1"
-                :key="index"
-                class="menu-item"
-                :class="[currentIndex === index?'active':'']"
-                @click="switchCategory(index,item.id)">
+            <li class="menu-item">
               鲜花
             </li>
         </ul>
         <div class="category-main">
             <div class="category-detail-box">
-                <div class="category-top"
-                     >
-                  <!--v-if="menu.length>0" -->
-                    <div class="category-header">
-                        <img src="./../../../static/img/flower/9012177.jpg"
-                             alt="small-banner">
+                <div class="category-top">
+                    <div class="category-header" style="background-image: url('../../../static/img/planting/banner_flower.jpg');height: 175px">
+                        <div class="navigation"><a href="#">浪漫告白·卡罗拉红玫瑰11枝</a></div>
                     </div>
-                    <div class="category-title">
-                        <h2 class="text">{{categoryTitle}}</h2>
-                    </div>
+                    <div class="category-title"><h2 class="text">鲜花</h2></div>
                 </div>
                 <div class="category-list">
-                    <div class="category-goods-items"
-                         v-for="(item,index) in 1"
-                         @click="linktoDetail(item.id)"
-                         :key="index">
-                        <img src="./../../../static/img/flower/9012177.jpg" alt="" class="goods-image">
-                        <div class="goods-name">{{item.name}}</div>
+                    <div class="category-goods-items" v-for="(item,index) in menu"
+                         @click="onProducts(item.flowerUseId)" :key="index">
+                      <img :src="'../../../static/img/planting/'+item.flowerUseId+'.jpg'"
+                           alt=""
+                           class="goods-image">
+                        <div class="goods-name">{{item.flowerUseName}}</div>
                     </div>
                 </div>
 
@@ -50,48 +41,38 @@ export default {
         }
     },
     created() {
-        //this.getData()
+        this.getData()
     },
     computed: {
-        menuBanner() {
-            return this.menu[this.currentIndex].img.url
-        },
-        categoryTitle() {
-            return this.menu[this.currentIndex].name
-        }
+        // menuBanner() {
+        //     return this.menu[this.currentIndex].img.url
+        // },
+        // categoryTitle() {
+        //     return this.menu[this.currentIndex].name
+        // }
     },
     methods: {
         switchCategory(index, id) {
             this.currentIndex = index
             this.getProduct(id)
         },
-        linktoDetail(id) {
-            this.$router.push({ path: '/page/detail', query: { id: id } })
-        },
         async getData() {
             let res = await this.getCategory()
             this.menu = res.data.data
           console.log(this.menu = res.data.data)
-            this.getProduct(this.menu[0].id)
         },
         getCategory() {
             return this.$http
             .get(api.getAllFloweruse)
         },
-        getProduct(id) {
-            this.$http
-                .get(
-                    // '/product/by_category',
-                {
-                    params: {
-                        id: id
-                    }
-                }
-                )
-                .then(res => {
-                    this.list = res.data.data.list
-                })
-        }
+      onProducts(id){
+        this.$router.push({
+          path:'/page/products',
+          query:{
+            selected:id
+          }
+        })
+      }
     }
 }
 </script>
@@ -122,6 +103,7 @@ export default {
             }
         }
     }
+
     .category-main {
         flex: 1;
         height: 100%;
@@ -139,6 +121,29 @@ export default {
                         vertical-align: top;
                         border-radius: 2px;
                     }
+                  .navigation {
+                    display: block;
+                    width:90%;
+                    margin: auto;
+                    height: 100%;
+                    line-height: 6.28571429rem;
+                    -webkit-box-sizing: border-box;
+                    -moz-box-sizing: border-box;
+                    box-sizing: border-box;
+                    background-color: rgba(35, 38, 40, 0.5);
+                    padding: 0 1.14285714rem;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    text-align: center;
+                    font-size: 2rem;
+                    a{
+                      color: #f0f0f0;
+                    }
+                    a:hover{
+                      color: #f0f0f0;
+                    }
+                  }
                 }
                 .category-title {
                     margin: 15px;
@@ -149,15 +154,16 @@ export default {
                         font-size: 12px;
                         color: #ab956d;
                         font-weight: normal;
+                        margin-right: 20px;
                         &::before,
                         &::after {
                             content: '';
                             display: inline-block;
                             position: relative;
                             top: -3px;
-                            width: 35px;
+                            width: 20px;
                             height: 1px;
-                            margin: 0 10px;
+                            margin: 0 ;
                             background-color: #979797;
                             transform: scaleY(0.5);
                         }

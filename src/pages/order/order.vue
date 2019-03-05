@@ -15,7 +15,7 @@
           <span v-if="item.orderState == '3'" style="color:#f53c27">{{item.orderState | filterState}}</span>
           <span v-if="item.orderState == '4'" style="color:#f59a27 ">{{item.orderState | filterState}}</span>
           <span v-if="item.orderState == '5'" style="color:#f59a27 ">{{item.orderState | filterState}}</span>
-          <span v-if="item.orderState=='7'" style="color:#3a3a3c ">{{item.orderState | filterState}}</span>
+          <span v-if="item.orderState == '7'" style="color:#3a3a3c ">{{item.orderState | filterState}}</span>
         </div>
         <div class="img-box ">
           <div>
@@ -41,7 +41,6 @@
     name: 'myOrders',
     data() {
       return {
-
         orderImgWidth: 300,
         selected: this.$route.query.selected ? this.$route.query.selected : '8',//tab选中状态,
         orderInfo: [],

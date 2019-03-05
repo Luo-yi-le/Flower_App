@@ -5,13 +5,13 @@
   "author": "Luo-yi-le <www.2318927272@qq.com>",
   "private": true,
   "scripts": {
+    "name": "vue-amap-starter",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "build": "node build/build.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-plugin-import": "^1.11.0",
     "babel-polyfill": "^6.26.0",
     "fastclick": "^1.0.6",
     "iview": "^3.2.2",
@@ -21,7 +21,9 @@
     "prerender-spa-plugin": "^3.4.0",
     "promise-limit": "^2.7.0",
     "qs": "^6.6.0",
+    "vant": "^1.6.7",
     "vue": "^2.5.22",
+    "vue-amap": "^0.5.8",
     "vue-jsonp": "^0.1.8",
     "vue-meta-info": "^0.1.7",
     "vue-router": "^3.0.2",
@@ -34,6 +36,7 @@
     "babel-core": "^6.22.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-loader": "^7.1.5",
+    "babel-plugin-import": "^1.11.0",
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-runtime": "^6.22.0",
     "babel-plugin-transform-vue-jsx": "^3.5.1",

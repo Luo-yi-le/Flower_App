@@ -1,12 +1,15 @@
 <template>
 	<div class="myCollection">
-		<div v-for="item in collectionList" :key="item.collectId">
-			<div class="goods-img">
+		<div v-for="item in collectionList"
+         :key="item.collectId"
+      :data-id="item.collectId"
+     >
+			<div class="goods-img" :data-id="item.collectId" @click="linkToDetail">
 				<img :src="'../../../static/img/flower/'+item.flower.flowerImageName"/>
 			</div>
 			<div class="goods-info">
-				<p>{{item.flower.flowerName}}</p>
-				<div><span>￥{{item.flower.flowerPrice}}</span>
+				<p :data-id="item.collectId" @click="linkToDetail">{{item.flower.flowerName}}</p>
+				<div><span :data-id="item.collectId" @click="linkToDetail">￥{{item.flower.flowerPrice}}</span>
           <a href="javascript:;" @click="deleteCollect(item.collectId)">取消收藏</a></div>
 			</div>
 		</div>
@@ -27,6 +30,10 @@
 		  this.selectCollection()
     },
     methods:{
+      linkToDetail(e) {
+        let id = e.currentTarget.dataset.id
+        this.$router.push({path: '/page/detail', query: {id: id}})
+      },
       selectCollection(){
         const userId=sessionStorage.getItem("userId")
         const that=this
@@ -39,7 +46,6 @@
         })
       }
       ,deleteCollect(collectId){
-        alert(collectId)
         let that=this
         that.$http.get(api.deleteCollect,{
           params:{"collect":collectId}

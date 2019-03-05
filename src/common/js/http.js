@@ -17,10 +17,10 @@ instance.interceptors.request.use(
         if (config.method === 'post') {
             config.data = Qs.stringify(config.data)
         }
-        // 若是有做鉴权token , 就给头部带上token
-      //   if (window.localStorage.getItem('token')) {
-      //   config.headers.Authorization = window.localStorage.getItem('token')
-      // }
+        //若是有做鉴权token , 就给头部带上token
+        if (window.sessionStorage.getItem('token')) {
+        config.headers.Authorization = window.sessionStorage.getItem('token')
+      }
         return config
     },
     error => {
@@ -32,15 +32,15 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     response => {
         // token 过期或者其他情况的判断
-        // if (response.data.code === -1) {
-        //   localStorage.removeItem('token')
-        //   router.replace({
-        //     path: 'login',
-        //     query: { redirect: router.currentRoute.fullPath }
-        //   })
-        // }else{
-        //   return response
-        // }
+        if (response.data.code === -1) {
+          sessionStorage.removeItem('token')
+          router.replace({
+            path: 'loginLoginId',
+            query: { redirect: router.currentRoute.fullPath }
+          })
+        }else{
+          return response
+        }
 
         // 返回响应时做一些处理，我们这里直接返回
         return response

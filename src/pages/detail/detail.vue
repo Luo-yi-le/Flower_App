@@ -43,9 +43,15 @@
           {{item}}
         </tab-item>
       </tab>
-      <swiper v-model="index" height="auto" :show-dots="false">
-        <swiper-item v-for="(item, index) in product" :key="index">
-          <div class="tab-swiper vux-center">{{item}}</div>
+      <swiper  height="auto" :show-dots="false">
+        <swiper-item v-for="(item, index) in product" :key="index" >
+          <div class="tab-swiper">
+            <p>鲜花名称：<span class="span">{{item.flowerName}}</span></p>
+            <p>鲜花包装：<span class="span">{{item.flowerPackaging}}</span></p>
+            <p>鲜花支数：<span class="span">{{item.flowerBranchNumberId}}</span></p>
+            <p>鲜花材料：<span class="span">{{item.flowerMaterials}}</span></p>
+            <p>花语：<span class="span">{{item.flowerLanguage}}</span></p>
+          </div>
         </swiper-item>
       </swiper>
     </div>
@@ -58,15 +64,16 @@
   import * as api from '../../../static/js/api/api.js'
   import XSwitch from "vux/src/components/x-switch/index";
 
-  const tabList = () => ['商品详情', '产品参数',]
+  const tabList = () => ['商品详情']
+  const array=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
   export default {
     inject: ['reload'],
     name: 'detail',
     data() {
       return {
         product: [],
-        countsArray: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]],
-        count: ["1"],
+        countsArray: [array],
+        count: ['1'],
         list: tabList(),
         selectd: '商品详情',
         index: 0,
@@ -206,6 +213,8 @@
         })
       }
       , insertCart() {
+        console.log('11'+this.count[0])
+        console.log('22'+JSON.stringify(this.count))
         let userId = sessionStorage.getItem('userId')
         let that = this
         let flowerId = this.$route.query.id
@@ -213,7 +222,7 @@
             // params: {
             'flowerId': flowerId,
             'userId': userId,
-            'cartAmount': this.count
+            'cartAmount': that.count[0]
             //}
           }).then((res) => {
             if (res.data.msg == "success") {
@@ -462,8 +471,14 @@
       margin-top: 15px;
 
       .tab-swiper {
+        text-align: center;
         background-color: #fff;
         height: 180px;
+        p{
+          .span{
+            color: #ec8b89
+          }
+        }
       }
     }
   }

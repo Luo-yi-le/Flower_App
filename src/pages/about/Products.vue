@@ -1,11 +1,24 @@
 <template>
   <div>
-    <div class="category">111</div>
     <div ref="mescroll" class="mescroll">
-      <keep-alive>
+      <div class="category">
+        <tab :line-width="2" custom-bar-width="50px">
+          <tab-item :selected="selected === '1'" @on-item-click="selected = '1'">爱情鲜花</tab-item>
+          <tab-item :selected="selected === '2'" @on-item-click="selected = '2'">友情鲜花</tab-item>
+          <tab-item :selected="selected === '3'" @on-item-click="selected = '3'">生日鲜花</tab-item>
+          <tab-item :selected="selected === '4'" @on-item-click="selected = '4'">问候长辈</tab-item>
+          <tab-item :selected="selected === '5'" @on-item-click="selected = '5'">回报老师</tab-item>
+          <tab-item :selected="selected === '6'" @on-item-click="selected = '6'">探病慰问</tab-item>
+          <tab-item :selected="selected === '7'" @on-item-click="selected = '7'">道歉鲜花</tab-item>
+          <tab-item :selected="selected === '8'" @on-item-click="selected = '8'">婚庆鲜花</tab-item>
+        </tab>
+
+      </div>
+
         <div class="products">
           <div class="products-item"
                v-for="(item,index) in flowerList"
+               v-show="item.flowerUseId == selected || selected ==='1'"
                :key="index"
                :data-id="item.flowerId"
                @click="linkToDetail">
@@ -17,27 +30,29 @@
               <p class="price">¥&nbsp;{{item.flowerPrice}}</p>
             </div>
           </div>
-
         </div>
-      </keep-alive>
     </div>
   </div>
 </template>
-
 <script>
   //引入mescroll.min.js和mescroll.min.css
   import MeScroll from 'mescroll.js'
   import 'mescroll.js/mescroll.min.css'
   import * as api from '../../../static/js/api/api'
+  import Tab from "vux/src/components/tab/tab";
+  import TabItem from "vux/src/components/tab/tab-item";
 
   export default {
     name: 'products',
+    components: {TabItem, Tab},
     props: ['products'],
 
     data() {
       return {
         flowerList: [],
         mescroll: null, //mescroll实例对象
+        menu: [],
+        selected: this.$route.query.selected ? this.$route.query.selected : '1',//tab选中状态,
       }
     },
     mounted() {
@@ -68,6 +83,8 @@
         }
       });
     },
+    created() {
+    },
     methods: {
       linkToDetail(e) {
         let id = e.currentTarget.dataset.id
@@ -76,28 +93,42 @@
       mescrollInit(mescroll) {
         this.mescroll = mescroll
       },
-      FlowerList(page) {
+      FlowerList(page, selected) {
+        const id = this.$route.query.selected
+        // console.log(id)
         setTimeout(() => {
           const that = this
           that.$http.get(api.getFlower, {
             params: {
               skip: page.num,
-              size: page.size
+              size: page.size,
+              flowerUseId: id
             }
           })
             .then((res) => {
               let arr = res.data.data
-              if (page.num == 1) that.flowerList = [];
+              if (page.num == 1)
+                that.flowerList = [];
               console.log(that.flowerList = res.data.data)
               that.flowerList = this.flowerList.concat(arr);
+
               that.$nextTick(() => {
                 that.mescroll.endSuccess(arr.length);
               })
             }).catch((err) => {
             that.mescroll.endErr();
           })
-        }, 1500)
-      }
+        }, 1000)
+      },
+      async getData() {
+        let res = await this.getCategory()
+        this.menu = res.data.data
+        console.log(this.menu = res.data.data)
+      },
+      getCategory() {
+        return this.$http
+          .get(api.getAllFloweruse)
+      },
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {
@@ -131,8 +162,10 @@
 <style scoped lang="less">
   @import "../../../static/styles/font-awesome-4.7.0/css/font-awesome.css";
 
+  @white: #FFFFFF;
+  @black: #393a3e;
   .products {
-    margin: 40px 10px 10px 10px;
+    margin: 10px 10px 10px 10px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -167,11 +200,12 @@
         }
       }
     }
+
+    .category {
+
+    }
   }
 
-  .category {
-
-  }
 
   .mescroll {
     position: fixed;

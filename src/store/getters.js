@@ -1,13 +1,16 @@
 // 加入购物车中的商品
 export const cartAllList = state => state.cartAllList
+
 // 计算总数量
 export const totalCount = (state, getters) => {
     let num = 0
     getters.cartAllList.forEach(item => {
         num += item.cartAmount
     })
+
     return num
 }
+
 // 计算购物车选中的总数量
 export const selectedArr = (state, getters) => {
     let selectArr = []

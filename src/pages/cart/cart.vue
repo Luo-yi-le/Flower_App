@@ -19,10 +19,10 @@
               </div>
               <div class="bottom-box">
                 <div class="cart-item-counts">
-                  <a href="javascript:;" class="btns cut" :class="[item.cartAmount===1?'disabled':'']"
-                     data-type="cut" @click="cut(item.cartId)">-</a>
-                  <a href="javascript:;" class="counts">{{item.cartAmount}}</a>
-                  <a href="javascript:;" class="btns add" data-type="add" @click="add(item.cartId)">+</a>
+                  <group>
+                    <x-number width="30px" v-model="item.cartAmount" :min="1" :max="10"
+                              @on-change="updateCartAmount(item.cartId,item.cartAmount)"></x-number>
+                  </group>
                 </div>
                 <span class="delete" @click="del(item.cartId)">×</span>
               </div>
@@ -35,7 +35,7 @@
           <img src="../../../static/img/icon/all@selected.png"
                alt="all">
           <!-- v-if="this.cartData.length===this.selectedArr.length"-->
-          <img src="../../../static/img/icon/all.png" alt="" >
+          <img src="../../../static/img/icon/all.png" alt="">
           <!--v-else-->
           <span>全选()</span>
           <!--{{this.selectedArr.length}}-->
@@ -45,7 +45,7 @@
           <span class="accounts-btn" @click="submitOrder">下单</span>
           <span class="price-text">{{tolalPrice | formatMoney}}</span>
           <span class="arrow-icon">
-            <img src="../../../static/img/icon/arrow@grey.png" v-if="tolalPrice===0" >
+            <img src="../../../static/img/icon/arrow@grey.png" v-if="tolalPrice===0">
             <img src="../../../static/img/icon/arrow.png" v-else>
           </span>
         </div>
@@ -60,25 +60,29 @@
 <script>
   import {mapGetters, mapMutations} from 'vuex'
   import * as api from '../../../static/js/api/api.js'
+  import InlineXNumber from "vux/src/components/inline-x-number/index";
+  import XNumber from "vux/src/components/x-number/index";
+  import {Group} from 'vux'
 
-  const userName=sessionStorage.getItem('userName')
+  const userName = sessionStorage.getItem('userName')
   export default {
     name: 'cart',
+    components: {XNumber, InlineXNumber, Group},
     data() {
       return {
         cartAllList: [],
         flowerList: [],
-        userName:userName
+        userName: userName
       }
     },
     computed: {
-      ...mapGetters(['cartAllList', 'tolalPrice', 'selectedArr']),
+      ...mapGetters([ 'tolalPrice', 'selectedArr']),
       allChecked() {
-        return this.selectedArr.length ===this.cartAllList.length
+        return this.selectedArr.length === this.cartAllList.length
       }
     },
     created() {
-     this.selectAllCart()
+      this.selectAllCart()
     },
     methods: {
       ...mapMutations([
@@ -93,7 +97,7 @@
       },
       findIndexById(cartId) {
         return this.cartAllList.findIndex(item => {
-          return item.cartId ===cartId
+          return item.cartId === cartId
         })
       },
       toggleSelect(id) {
@@ -101,20 +105,19 @@
         this.TOGGLE_STATUS({index: index})
       },
       del(id) {
-        let cartId = this.findIndexById(id)
-        let that=this
-        // that.$http.post(api.deleteCart,{
-        //   cartId:index
-        // })
-        console.log(cartId)
-      },
-      add(id) {
-        let index = this.findIndexById(id)
-        this.ADD_PRODUCT({index: index})
-      },
-      cut(id) {
-        let index = this.findIndexById(id)
-        this.CUT_PRODUCT({index: index})
+        let that = this
+        that.$http.post(api.deleteCart, {
+          cartId: id
+        }).then((res) => {
+          this.$vux.toast.show({
+            text: '取消完成'
+          })
+          setTimeout(() => {
+            location.reload()
+          }, 1000)
+        }).catch((err) => {
+          console.log(err)
+        })
       },
       toggleAllCheck() {
         this.TOGGLE_ALLCHEK({flag: this.allChecked})
@@ -136,10 +139,19 @@
         }).catch((err) => {
           console.log(err)
         })
-      }
-      ,updateCartAmount(){
-        let that=this
-        that.$http.post(api.updateCartAmount)
+      },
+       updateCartAmount(id, cartAmount) {
+        let that = this
+        that.$http.post(api.updateCartAmount, {
+          cartAmount: cartAmount,
+          cartId: id
+        }).then((res) => {
+          that.$vux.loading.show({
+            text: 'loading'
+          })
+        }).catch((err) => {
+          console.log(err)
+        })
       }
     },
 
@@ -237,7 +249,7 @@
               justify-content: space-between;
 
               .cart-item-counts {
-                width: 110px;
+                width: 200px;
                 display: flex;
                 justify-content: space-between;
                 text-align: center;
@@ -356,7 +368,8 @@
       justify-content: center;
     }
   }
-  .userName{
+
+  .userName {
     font-size: 0.8rem;
     width: 15rem;
     margin-top: 0.8rem;

@@ -4,8 +4,11 @@
 			<p>{{item.consigneeName}}&nbsp;&nbsp;{{item.consigneePhone}}</p>
 			<p>{{item.address}}&nbsp;&nbsp;{{item.detailedAddress}}</p>
 			<div>
-				<check-icon :value.sync="item.state.stateId==11" @click.native.stop="handleCheckedItem(item)">默认地址</check-icon>
+				<check-icon :value.sync="item.state.stateId==11"
+                    @click.native.stop="handleCheckedItem">默认地址</check-icon>
 				<router-link @click.native.stop :to="{path:'/page/addAddress',query:{id:item.addressId}}">编辑</router-link>
+        <router-link @click.native.stop :to="{path:'/page/address'}" @click="deleteAddress(item.addressId)">删除</router-link>
+        <!--<a href="/page/address" @click="deleteAddress(item.addressId)">删除</a>-->
 			</div>
 		</div>
 		<x-button type="primary" class="add-btn" @click.native="handleAddAddress">+ 添加收货地址</x-button>
@@ -52,6 +55,20 @@
             console.log(that.addressList = res.data.data)
           }).catch(res => {
           console.log(res);
+        })
+      },
+      deleteAddress(id){
+			  const that=this
+        that.$http.post(api.deleteAddress,{addressId:id})
+          .then((res)=>{
+            this.$vux.toast.show({
+              text: '删除成功'
+            })
+            setTimeout(() => {
+              location.reload()
+            }, 1000);
+          }).catch((err)=>{
+            console.log(err)
         })
       }
 		},
