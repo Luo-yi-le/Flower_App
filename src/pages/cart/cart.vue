@@ -1,27 +1,61 @@
 <template>
   <div class="cart">
+    <div class="order-address-info">
+      <div class="address-box" v-if="this.addressOne">
+        <div class="contact-box">
+          <div class="contact">
+            <div class="name">
+              <img src="../../assets/img/icon/user.png">
+              <span class="text">{{addressOne.consigneeName}}</span>
+            </div>
+            <div class="mobile">
+              <img src="../../assets/img/icon/mobile.png">
+              <span class="text">{{addressOne.consigneePhone}}</span>
+            </div>
+          </div>
+          <div class="detail">
+            {{addressOne.address}}&nbsp; {{addressOne.detailedAddress}}
+          </div>
+        </div>
+        <div class="contact-icon">
+          <img src="../../assets/img/icon/arrow@right.png">
+        </div>
+      </div>
+      <div class="add-address"
+           v-else @click="addAddress">
+        <i class="icon-add">+</i>
+        <span>选择地址</span>
+      </div>
+    </div>
+    <hr/>
     <div v-if="cartAllList.length>0">
       <div class="cart-box">
-        <div class="cart-item vux-1px-b" v-for="(item,index) in cartAllList" :key="index">
+        <div class="cart-item vux-1px-b" v-for="(item,index) in cartAllList" :key="item.cartId">
           <div class="cart-item-main">
-            <div class="cart-item-checkbox" @click="toggleSelect(item.cartId)">
-              <i class="icon_checkbox" v-if="item.isChecked"></i>
-              <i class="icon_checkbox checked" v-else></i>
+
+            <div class="cart-item-checkbox">
+              <input type="checkbox"
+                     name="checkboxinput"
+                     class="icon_checkbox"
+                     :value="item.cartId"
+                     checked="checked"
+                     @click="toggleSelect(item.flowerId)">
             </div>
-            <div class="cart-item-image" @click="linkToDetail(item.cartId)">
-              <img :src="'./../../../static/img/flower/'+item.flower.flowerImageName" alt="img">
+            <div class="cart-item-image" @click="linkToDetail(item.flowerId)">
+              <img :src="url+'/flower/'+item.flower.flowerImageName" alt="img">
             </div>
 
             <div class="cart-item-ctrl">
               <div class="title-box">
-                <span class="title">{{item.flower.flowerName}}</span>
-                <span class="price" style="color: #ec8b89">{{item.flower.flowerPrice|formatMoney}}</span>
+                <span class="title">{{item.flower.flowerName}} </span>
+                <span class="price"
+                      style="color: #ec8b89">{{item.cartAmount*item.flower.flowerPrice|formatMoney}}</span>
               </div>
               <div class="bottom-box">
                 <div class="cart-item-counts">
                   <group>
                     <x-number width="30px" v-model="item.cartAmount" :min="1" :max="10"
-                              @on-change="updateCartAmount(item.cartId,item.cartAmount)"></x-number>
+                              @on-change="updateCartAmountById(item.cartId,item.cartAmount)"></x-number>
                   </group>
                 </div>
                 <span class="delete" @click="del(item.cartId)">×</span>
@@ -31,22 +65,22 @@
         </div>
       </div>
       <div class="cart-footer">
-        <div class="all-select" @click="toggleAllCheck">
-          <img src="../../../static/img/icon/all@selected.png"
-               alt="all">
-          <!-- v-if="this.cartData.length===this.selectedArr.length"-->
-          <img src="../../../static/img/icon/all.png" alt="">
-          <!--v-else-->
-          <span>全选()</span>
-          <!--{{this.selectedArr.length}}-->
+        <div class="all-select">
+          <img src="../../assets/img/icon/all@selected.png"
+               alt="all" v-if="checkData>0">
+          <img src="../../assets/img/icon/all.png" alt="" v-else>
+          <span>全选({{cartAllList.length}})</span>
+
         </div>
         <span class="userName">下单人：{{userName}}</span>
-        <div class="all-price-cutmit" :class="[tolalPrice===0?'disabled':'']">
-          <span class="accounts-btn" @click="submitOrder">下单</span>
-          <span class="price-text">{{tolalPrice | formatMoney}}</span>
+        <div class="all-price-cutmit" :class="[total===0?'disabled':'']">
+          <span class="accounts-btn">{{total | formatMoney}}</span>
+          <span v-for="(item,index) in cartAllList">
+          <span class="price-text" @click="submitOrder(item.cartId,item.cartAmount); toggleSelect(item.flowerId)">下单</span>
+            </span>
           <span class="arrow-icon">
-            <img src="../../../static/img/icon/arrow@grey.png" v-if="tolalPrice===0">
-            <img src="../../../static/img/icon/arrow.png" v-else>
+            <img src="../../assets/img/icon/arrow@grey.png" v-if="total!==0">
+            <img src="../../assets/img/icon/arrow.png" v-else>
           </span>
         </div>
       </div>
@@ -58,6 +92,20 @@
 </template>
 
 <script>
+  import $ from 'jquery'
+
+  function onc() {
+    var pidsArray = $("input[name=checkboxinput]:checked").serializeArray();
+    console.log(pidsArray);
+    var flowerIds = [];
+    for(var i = 0; i < pidsArray.length; i++) {
+      flowerIds.push(parseInt(pidsArray[i].value));
+    }
+    console.log(JSON.stringify(flowerIds));
+  }
+
+
+
   import {mapGetters, mapMutations} from 'vuex'
   import * as api from '../../../static/js/api/api.js'
   import InlineXNumber from "vux/src/components/inline-x-number/index";
@@ -72,17 +120,42 @@
       return {
         cartAllList: [],
         flowerList: [],
-        userName: userName
+        userName: userName,
+        checkData: ['1'],
+        totalPrice: [],
+        addressOne: [],
+        datetiem: new Date().toLocaleDateString(),
+        Id:[],
+        cId:[],
+        cardIdsun:[],
+        url:api.url,
       }
     },
     computed: {
-      ...mapGetters([ 'tolalPrice', 'selectedArr']),
+      ...mapGetters(['tolalPrice', 'selectedArr']),
       allChecked() {
         return this.selectedArr.length === this.cartAllList.length
-      }
+      },
+      totalMoney: function (item, index) {
+        let sum = 0;
+        for (let i = 0; i < this.totalPrice.length; i++) {
+          sum += this.totalPrice[i];
+        }
+        ;
+        return sum;
+      },
+      total() {
+        var sum = 0;
+        for (var i = 0; i < this.cartAllList.length; i++) {
+          sum += (this.cartAllList[i].flower.flowerPrice * this.cartAllList[i].cartAmount);
+        }
+        return sum;
+      },
+
     },
     created() {
       this.selectAllCart()
+      this.selectAddress()
     },
     methods: {
       ...mapMutations([
@@ -101,8 +174,11 @@
         })
       },
       toggleSelect(id) {
-        let index = this.findIndexById(id)
-        this.TOGGLE_STATUS({index: index})
+         this.Id=id
+        console.log(this.Id)
+      },
+      addAddress() {
+        this.$router.push({path: '/page/address'})
       },
       del(id) {
         let that = this
@@ -119,14 +195,71 @@
           console.log(err)
         })
       },
-      toggleAllCheck() {
-        this.TOGGLE_ALLCHEK({flag: this.allChecked})
+      submitOrder(id,cartAmount) {
+        var pidsArray = $("input[name=checkboxinput]:checked").serializeArray();
+        console.log(pidsArray);
+        var items = [];
+        for(var i = 0; i < pidsArray.length; i++) {
+          items.push(parseInt(pidsArray[i].value));
+        }
+        const item=JSON.stringify(items)
+        console.log(item);
+
+        const userId = sessionStorage.getItem('userId')
+        const userPhoneAndMailbox = sessionStorage.getItem("userPhoneAndMailbox");
+        // const cIds=[id]
+        const that=this
+        that.cardIdsun=id
+        if(that.addressOne==''||that.addressOne==null){
+          this.$vux.toast.text({
+            text: '请添加地址'
+          })
+          this.$router.push({path: '/page/address'})
+        }else{
+          that.$http.get(api.insertOrderByOrderId, {
+            params: {
+              orderPrice: that.total,
+              orderConsigneeName: that.addressOne.consigneeName,
+              orderConsigneePhone: that.addressOne.consigneePhone,
+              orderAddress: that.addressOne.address,
+              orderDetailedAddress: that.addressOne.detailedAddress,
+              orderDeliveryTime: (new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDay()),
+              orderBuyerPhone: '',
+              orderDeliveryTimeFrame: '下午',
+              orderBuyerName: that.userName,
+              orderMailbox: userPhoneAndMailbox,
+              orderGreetingMessage: '',
+              userId: userId
+            }
+          }).then((res) => {
+            that.$http.get(api.insertOrderflowerOne, {
+              params: {
+                flowerId: that.Id,
+                orderFlowerAmount: cartAmount,
+                orderFlowerPrice: that.total,
+                orderId: res.data.getCount,
+                cartId: id
+              }
+            }).then((res)=>{
+              that.$http.post(api.deleteCart,{
+                  cartId:id
+              }).then((res)=>{
+                console.log(res.data)
+              })
+              setTimeout(()=>{
+                this.$router.push({path: '/page/order'})
+              },1000)
+            })
+            this.$vux.toast.show({
+              text: '下单完成'
+            })
+          }).catch((err) => {
+            console.log(err)
+          })
+        }
       },
-      submitOrder() {
-        this.$router.push({
-          path: '/page/order',
-          query: {account: this.tolalPrice}
-        })
+      submitflower(id) {
+        console.log(id)
       }
       , selectAllCart() {
         const userId = sessionStorage.getItem('userId')
@@ -140,11 +273,13 @@
           console.log(err)
         })
       },
-       updateCartAmount(id, cartAmount) {
+      updateCartAmountById(id, cartAmount) {
+        console.log(id)
+        console.log(cartAmount)
         let that = this
         that.$http.post(api.updateCartAmount, {
-          cartAmount: cartAmount,
-          cartId: id
+          'cartId': id,
+          'cartAmount': cartAmount,
         }).then((res) => {
           that.$vux.loading.show({
             text: 'loading'
@@ -153,6 +288,18 @@
           console.log(err)
         })
       }
+      ,
+      selectAddress() {
+        const that = this
+        const userId = sessionStorage.getItem("userId");
+        that.$http.post(api.selectUserIdByStateId, {"userId": userId, 'stateId': 11})
+          .then(res => {
+            that.addressOne = res.data.data;
+            console.log(that.addressOne = res.data.data)
+          }).catch(res => {
+          console.log(res);
+        })
+      },
     },
 
     filters: {
@@ -197,11 +344,13 @@
             .icon_checkbox {
               height: 22px;
               width: 22px;
-              background: url('../../../static/img/icon/circle@selected.png') no-repeat;
+              border-radius: 10px;
+              background: url('../../assets/img/icon/circle@selected.png') no-repeat;
               background-size: 100% 100%;
 
               &.checked {
-                background: url('../../../static/img/icon/circle@noselected.png') no-repeat;
+                border-radius: 10px;
+                background: url('../../assets/img/icon/circle@noselected.png') no-repeat;
                 background-size: 100% 100%;
               }
             }
@@ -375,5 +524,75 @@
     margin-top: 0.8rem;
     color: lime;
     margin-right: -8rem;
+  }
+
+  .order-address-info {
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    background: #fff;
+
+    .address-box {
+      display: flex;
+
+      .contact-box {
+        flex: 1;
+
+        .contact {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 12px;
+
+          div {
+            display: flex;
+            align-items: center;
+
+            &.mobile {
+              flex-basis: 100px;
+            }
+
+            img {
+              height: 16px;
+              width: 16px;
+              margin-right: 5px;
+            }
+
+            .text {
+              color: #333;
+            }
+          }
+        }
+
+        .detail {
+          color: #999999;
+        }
+      }
+
+      .contact-icon {
+        flex-basis: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        img {
+          transform: rotate(270deg);
+          height: 24px;
+          width: 24px;
+        }
+      }
+    }
+
+    .add-address {
+      width: 100%;
+      color: #989898;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+
+      .icon-add {
+        font-style: normal;
+        margin-right: 5px;
+      }
+    }
   }
 </style>

@@ -5,7 +5,7 @@
       :data-id="item.collectId"
      >
 			<div class="goods-img" :data-id="item.collectId" @click="linkToDetail">
-				<img :src="'../../../static/img/flower/'+item.flower.flowerImageName"/>
+				<img :src="url+'/flower/'+item.flower.flowerImageName"/>
 			</div>
 			<div class="goods-info">
 				<p :data-id="item.collectId" @click="linkToDetail">{{item.flower.flowerName}}</p>
@@ -24,6 +24,7 @@
 		data() {
 			return {
 				collectionList:[],
+        url:api.url,
 			}
 		},
     created(){

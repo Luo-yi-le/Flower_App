@@ -1,52 +1,47 @@
 <template>
   <div class="amap-page-container">
-    <el-amap vid="amap" :plugin="plugin" class="amap-demo" :center="center">
+    <el-amap vid="amap" :zoom="zoom" :center="center" class="amap-demo">
+      <el-amap-polyline :editable="polyline.editable"  :path="polyline.path" :events="polyline.events"></el-amap-polyline>
     </el-amap>
 
     <div class="toolbar">
-        <span v-if="loaded">
-          location: lng = {{ lng }} lat = {{ lat }}
-        </span>
-      <span v-else>正在定位</span>
+      <button type="button" name="button" v-on:click="changeEditable">change editable</button>
     </div>
   </div>
 </template>
 
-
+<style>
+  .amap-demo {
+    height: 300px;
+  }
+</style>
 
 <script>
   module.exports = {
     name:'Map',
     data() {
-      let self = this;
       return {
-        center: [121.59996, 31.197646],
-        lng: 0,
-        lat: 0,
-        loaded: false,
-        plugin: [{
-          pName: 'Geolocation',
+        zoom: 12,
+        center: [121.5273285, 31.25515044],
+        polyline: {
+          path: [[121.5389385, 31.21515044], [121.5389385, 31.29615044], [121.5273285, 31.21515044]],
           events: {
-            init(o) {
-              // o 是高德地图定位插件实例
-              o.getCurrentPosition((status, result) => {
-                if (result && result.position) {
-                  self.lng = result.position.lng;
-                  self.lat = result.position.lat;
-                  self.center = [self.lng, self.lat];
-                  self.loaded = true;
-                  self.$nextTick();
-                }
-              });
+            click(e) {
+              alert('click polyline');
+            },
+            end: (e) => {
+              let newPath = e.target.getPath().map(point => [point.lng, point.lat]);
+              console.log(newPath);
             }
-          }
-        }]
+          },
+          editable: false
+        }
       };
+    },
+    methods: {
+      changeEditable() {
+        this.polyline.editable = !this.polyline.editable;
+      }
     }
   };
 </script>
-<style scoped>
-  .amap-demo {
-    height: 300px;
-  }
-</style>

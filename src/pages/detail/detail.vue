@@ -3,7 +3,7 @@
     <div class="detail-main" v-for="pro in product">
       <!-- v-if="product"-->
       <div class="fixed-cart-box">
-        <img src="../../../static/img/icon/cart@top.png" alt="icon-cart" ref="topCart"
+        <img src="../../assets/img/icon/cart@top.png" alt="icon-cart" ref="topCart"
              @click="linkToCart" :class="[isShake ?'animate':'']">
         <span class="total-count" v-if="cartAllList.length>0">{{cartAllList.length}}</span>
         <span class="total-count" v-else>0</span>
@@ -11,7 +11,7 @@
         <label v-else style="font-size: 0.8rem" @click="insertCollect">收藏</label>
       </div>
       <div class="detail-img">
-        <img :src="'./../../../static/img/flower/'+pro.flowerImageName" alt="image">
+        <img :src="url+'/flower/'+pro.flowerImageName" alt="image">
       </div>
       <div class="cart-box">
         <div class="product-counts">
@@ -24,7 +24,7 @@
         <div class="add-cart-btn" @touchstart="insertCart">
           <span class="add-cart">加入购物车</span>
           <i class="icon-cart"></i>
-          <img class="small-top-img" ref="smallTopImg" src="./../../../static/img/flower/9012177.jpg"
+          <img class="small-top-img" ref="smallTopImg" :src="url+'/flower/9012177.jpg'"
                :class="[isFly ?'animate':'']" alt="image">
         </div>
       </div>
@@ -63,10 +63,11 @@
   import {mapState, mapMutations, mapGetters} from 'vuex'
   import * as api from '../../../static/js/api/api.js'
   import XSwitch from "vux/src/components/x-switch/index";
-
   const tabList = () => ['商品详情']
   const array=['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+
   export default {
+
     inject: ['reload'],
     name: 'detail',
     data() {
@@ -82,7 +83,9 @@
         cartAllList: [],
         collectCount: [],
         collect:[],
-        collectId:''
+        collectId:'',
+        flowerId:this.$route.query.id,
+        url:api.url,
       }
     },
     computed: {
@@ -113,12 +116,14 @@
       },
       getAllProducts() {
         let that = this
-        let flowerId = this.$route.query.id
+
+        console.log(that.flowerId)
         that.$http.get(api.getFlower, {
           params: {
-            flowerId: flowerId,
+            flowerId: that.flowerId,
             skip: 0,
-            size: 1
+            size: 1,
+            rank: 8
           }
         })
           .then(res => {
@@ -381,7 +386,7 @@
           .picker {
             margin: 0 10px;
             width: 35%;
-            background: url('../../../static/img/icon/arrow@down.png') no-repeat right center;
+            background: url('../../assets/img/icon/arrow@down.png') no-repeat right center;
           }
 
           .counts-tips {
@@ -418,7 +423,7 @@
             margin-left: 20px;
             height: 16px;
             width: 16px;
-            background: url('../../../static/img/icon/cart.png') no-repeat;
+            background: url('../../assets/img/icon/cart.png') no-repeat;
             background-size: 100% 100%;
           }
 

@@ -3,14 +3,15 @@
        @keyup.enter="onLogin">
     <div class="logo-wrap">
       <span v-if="">
-        <img :src="'../../../static/img/user/'+userPor" class="app-logo">
+        <!--<img :src="'../../../static/img/user/'+userPor" class="app-logo">-->
+        <img :src="url+'/user/'+userPor" class="app-logo">
       </span>
       <h2 class="app-name">{{userName}}</h2>
     </div>
 
     <group>
       <x-input placeholder="登陆账号" v-model="userPhoneAndMailbox" @keyup.native="keyUpUserPor"></x-input>
-      <x-input type="number" placeholder="请输入密码" v-model="userPassword"></x-input>
+      <x-input type="password" placeholder="请输入密码" v-model="userPassword"></x-input>
     </group>
     <box gap="10px 10px" style="text-align:right">
       <p>
@@ -28,6 +29,7 @@
 <script>
   import * as api from '../../../static/js/api/api.js'
   import {XInput, Group, XButton, Cell, Toast, base64, Box, Msg} from 'vux'
+
   export default {
     name: "Login",
     components: {
@@ -53,7 +55,8 @@
         userPhoneAndMailbox: '',
         userPor: '',
         defauliPro: '',
-        cartAllList:[]
+        cartAllList:[],
+        url:api.url,
       }
     },
     activated() {
@@ -128,7 +131,7 @@
               that.userName = that.userList.userName;
               sessionStorage.setItem("userHeadPortrait",that.userPor)
             } else {
-              that.defauliPro = '../../../static/img/flower/9012055.jpg'
+              // that.defauliPro = '../../../static/img/flower/9012055.jpg'
             }
           }).catch((err) => {
           console.log(err)

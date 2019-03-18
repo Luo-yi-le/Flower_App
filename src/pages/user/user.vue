@@ -2,7 +2,7 @@
   <div class="user">
     <div class="user-header">
       <img class="avatar" link="/setUp"
-           :src="'../../../static/img/user/'+userName+'.jpg'"
+           :src="url+'/user/'+userName+'.jpg'"
            alt="">
       <span class="nickname"></span>
       {{userName}}
@@ -45,7 +45,7 @@
           <div class="order-main">
             <span v-for="(show,index) in order.orderflowerList">
               <div class="item-left">
-                <img :src="'../../../static/img/flower/'+show.flower.flowerImageName">
+                <img :src="url+'/flower/'+show.flower.flowerImageName">
               </div>
               <!--<div class="item-middle">-->
               <!--&lt;!&ndash;<div>&ndash;&gt;-->
@@ -95,6 +95,7 @@
         yes: 11,
         no: 12,
         addressId: '',
+        url:api.url,
 
       }
     },
@@ -230,7 +231,7 @@
             width: 24px;
             right: 5px;
             top: 10px;
-            background: url("../../../static/img/icon/arrow@right.png") no-repeat;
+            background: url("../../assets/img/icon/arrow@right.png") no-repeat;
             background-size: 100% 100%;
             display: block;
           }

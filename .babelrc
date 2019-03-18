@@ -11,7 +11,7 @@
   ],
   "plugins": [["import",{
     "libraryDirectory": "src/pages",
-    "libraryName":"vant",
+    "libraryName":"iview",
     "style":true
   }],"transform-vue-jsx", "transform-runtime"]
 }

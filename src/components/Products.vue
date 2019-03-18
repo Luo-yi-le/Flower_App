@@ -5,7 +5,7 @@
          :key="index"
          :data-id="item.flowerId"
          @click="linkToDetail">
-      <img :src="'./../../static/img/flower/'+item.flowerImageName"
+      <img :src=" url+'/flower/'+item.flowerImageName"
            alt="image"
            class="products-image">
       <div class="products-item-bottom">
@@ -14,12 +14,15 @@
       </div>
 
     </div>
-    <div><router-link to="/page/products">没有数据了? 查看全部</router-link></div>
+    <div>
+      <router-link to="/page/products" class="no-data">没有数据了? 查看全部</router-link>
+    </div>
   </div>
 </template>
 
 <script>
   import * as api from '../../static/js/api/api.js'
+  // import {url} from '../common/js/url'
 
   export default {
     name: 'products',
@@ -27,6 +30,8 @@
     data() {
       return {
         flowerList: [],
+        url:api.url
+
       }
     },
     created() {
@@ -38,9 +43,9 @@
         this.$router.push({path: '/page/detail', query: {id: id}})
       },
       FlowerList() {
-        const that=this
-        that.$http.get(api.getFlower, {params:{skip: 0, size: 20}})
-          .then((res)=>{
+        const that = this
+        that.$http.get(api.getFlower, {params: {skip: 0, size: 20, rank: 8}})
+          .then((res) => {
             that.flowerList = res.data.data
             console.log(that.flowerList = res.data.data)
           }).catch((err) => {
@@ -88,5 +93,13 @@
         }
       }
     }
+  }
+  .no-data {
+    display: flex;
+    height: 70px;
+    font-size: 13px;
+    color: #ccc;
+    align-items: center;
+    justify-content: center;
   }
 </style>

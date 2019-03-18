@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import storeIndex from '../store/index.js'
-
 const Page = r => require.ensure([], () => r(require('@/pages/page/page.vue')), 'page')
 const Home = r => require.ensure([], () => r(require('@/pages/home/home.vue')), 'home')
 const LoginLoginId = r => require.ensure([], () => r(require('@/pages/login/LgoinLoginId.vue')), 'loginLoginId')
@@ -20,6 +19,7 @@ const Cart = r => require.ensure([], () => r(require('@/pages/cart/cart.vue')), 
 const Order = r => require.ensure([], () => r(require('@/pages/order/order.vue')), 'order')
 const Map = r => require.ensure([], () => r(require('@/pages/order/Map.vue')), 'map')
 const ProductAll = r => require.ensure([], () => r(require('@/pages/about/Products.vue')), 'products')
+const Customer = r => require.ensure([], () => r(require('@/pages/customer/customer.vue')), 'customer')
 Vue.use(Router)
 
 // export default new Router({
@@ -150,6 +150,15 @@ Vue.use(Router)
         component: Cart
       }
       ,{
+        path: 'customer',
+        name: 'customer',
+        meta: {
+          title: '客服',
+          requireAuth: true // 添加该字段，表示进入这个路由是需要登录的
+        },
+        component: Customer
+      }
+        ,{
         path: 'order',
         name: 'order',
         meta: {

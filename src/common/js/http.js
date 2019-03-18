@@ -5,7 +5,7 @@ import Qs from 'qs'
  * http配置
  */
 const instance = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://192.168.43.75:8080',
     timeout: 10000,
     withCredentials: true, // 是否允许带cookie这些
 })

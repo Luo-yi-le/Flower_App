@@ -14,18 +14,18 @@ const mutations = {
     [types.UPDATE_DIRECTION](state, direction) {
         state.direction = direction
     },
-    [types.ADD_TO_CART](state, product) {
-        let { id, count } = product
+     [types.ADD_TO_CART](state, flower) {
+        let { cartId, count } = flower
         // 判断当前添加的商品是否存在购物车数组中
-        let record = state.cartAllList.find(n => n.id === id)
+        let record = state.cartAllList.find(n => n.cartId === cartId)
         if (!record) {
-            state.cartAllList.push(product)
+            state.cartAllList.push(flower)
           sessionStorage.setItem('cartAllList', JSON.stringify(state.cartAllList))
         } else {
             record.count += count
           sessionStorage.setItem('cartAllList', JSON.stringify(state.cartAllList))
         }
-    },
+   },
     [types.TOGGLE_STATUS](state, { index }) {
         state.cartAllList[index].isChecked = !state.cartAllList[index].isChecked
       sessionStorage.setItem('cartAllList', JSON.stringify(state.cartAllList))
@@ -50,10 +50,10 @@ const mutations = {
         }
       sessionStorage.setItem('cartAllList', JSON.stringify(state.cartAllList))
     },
-    [types.UPDATE_ADDRESS](state, form) {
-        state.addressInfo = form
-      sessionStorage.setItem('userInfo', JSON.stringify(state.userInfo))
-    },
+    // [types.UPDATE_ADDRESS](state, form) {
+    //     state.addressInfo = form
+    //   sessionStorage.setItem('userInfo', JSON.stringify(state.userInfo))
+    // },
     [types.PLACE_ORDER](state, orderItem) {
         let orderNo = randomString(12) // 模拟生成随机订单号
         let createdTime = new Date().getTime() // 当前时间戳

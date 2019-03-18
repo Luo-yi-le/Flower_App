@@ -22,7 +22,7 @@
                :key="index"
                :data-id="item.flowerId"
                @click="linkToDetail">
-            <img :src="'./../../../static/img/flower/'+item.flowerImageName"
+            <img :src="url+'/flower/'+item.flowerImageName"
                  alt="image"
                  class="products-image">
             <div class="products-item-bottom">
@@ -38,6 +38,7 @@
   //引入mescroll.min.js和mescroll.min.css
   import MeScroll from 'mescroll.js'
   import 'mescroll.js/mescroll.min.css'
+
   import * as api from '../../../static/js/api/api'
   import Tab from "vux/src/components/tab/tab";
   import TabItem from "vux/src/components/tab/tab-item";
@@ -52,6 +53,7 @@
         flowerList: [],
         mescroll: null, //mescroll实例对象
         menu: [],
+        url:api.url,
         selected: this.$route.query.selected ? this.$route.query.selected : '1',//tab选中状态,
       }
     },
@@ -68,7 +70,7 @@
           noMoreSize: 5, //如果列表已无数据,可设置列表总数大于5才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看
           toTop: {
             //回到顶部按钮
-            src: "../../../static/img/icon/top.png", //图片路径,默认null,支持网络图
+            src: "http://localhost:8080/img/icon/top.png", //图片路径,默认null,支持网络图
             offset: 1000, //列表滚动1000px才显示回到顶部按钮
           },
           lazyLoad: {
@@ -102,7 +104,8 @@
             params: {
               skip: page.num,
               size: page.size,
-              flowerUseId: id
+              flowerUseId: id,
+              rank:8
             }
           })
             .then((res) => {

@@ -6,7 +6,7 @@
           <p>头像</p>
         </div>
         <div class="weui-cell__ft" align="center">
-          <img :src="'../../../static/img/user/'+userInfo.userHeadPortrait" style="width: 40px;height: 40px;border-radius: 50%">
+          <img :src="url+'/user/'+userInfo.userHeadPortrait" style="width: 40px;height: 40px;border-radius: 50%">
         </div>
       </div>
     </div>
@@ -67,17 +67,17 @@
 </template>
 
 <script>
-  import axios from 'axios'
+
   import {XInput,XButton} from "vux";
   import * as api from '../../../static/js/api/api.js'
-
   export default {
     name: "UserInfo",
     components: {XButton, XInput},
     data() {
       return {
         userInfo: [],
-        inputCss:true
+        inputCss:true,
+        url:api.url,
       }
     }
     , created() {

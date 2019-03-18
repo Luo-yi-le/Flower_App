@@ -4,7 +4,7 @@
       <swiper :aspect-ratio="400/750" loop auto dots-position="center" :duration="800">
         <swiper-item class="swiper-item" v-for="(item, index) in imgList" :key="index"
                      @click.native="linkToDetail(2)">
-          <img :src="item.img " alt="image">
+          <img :src="item.img" alt="image">
         </swiper-item>
       </swiper>
     <group style="margin-bottom: 0.5rem">
@@ -12,24 +12,24 @@
         <div class="order-type-box">
           <div class="type-item" @click="linkToProducts">
             <!--<router-link :to="{path:'/page/products'}">-->
-            <img src="../../../static/img/planting/flower.png"/>
+            <img src="../../assets/img/planting/flower.png"/>
               <span style="">鲜花</span>
             <!--</router-link>-->
           </div>
           <div class="type-item" >
-            <img src="../../../static/img/planting/Immortal-flower.png"/>
+            <img src="../../assets/img/planting/Immortal-flower.png"/>
             <span>永生花</span>
           </div>
           <div class="type-item" >
-            <img src="../../../static/img/planting/cake.png"/>
+            <img src="../../assets/img/planting/cake.png"/>
             <span>蛋糕</span>
           </div>
           <div class="type-item" >
-            <img src="../../../static/img/planting/gift.png"/>
+            <img src="../../assets/img/planting/gift.png"/>
             <span>礼品</span>
           </div>
           <div class="type-item" >
-            <img src="../../../static/img/planting/chocolate.png"/>
+            <img src="../../assets/img/planting/chocolate.png"/>
             <span>巧克力</span>
           </div>
         </div>
@@ -42,10 +42,10 @@
         <div class="selectd-box">
           <div class="selectd-item big" v-if="index===2" v-for="(item,index) in 2" :key="index"
                :data-name="item.name">
-            <img src="./../../../static/img/flower/201708111123591219.jpg" alt="">
+            <img :src="url+'/flower/201708111123591219.jpg'" alt="">
           </div>
           <div class="selectd-item" :data-id="item.id" :data-name="item.name"  v-else>
-            <img src="./../../../static/img/flower/201709151725463208.jpg" alt="">
+            <img :src="url+'/flower/201709151725463208.jpg'" alt="">
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
   import products from '@/components/Products.vue'
 
   import MescrollVue from 'mescroll.js/mescroll.vue'
-
+  import * as api from '../../../static/js/api/api'
   const bannerId = 1
   const themeIds = '1,2,3'
 
@@ -73,12 +73,13 @@
     data() {
       return {
         imgList: [
-          {id: '101', img: './../../../static/img/planting/17_spz_m.jpg'},
-          {id: '102', img: './../../../static/img/planting/18_birthday_m.jpg'},
-          {id: '103', img: './../../../static/img/planting/19_yuanxiao_m.jpg'},
+          {id: '101', img: 'http://192.168.43.75:8080/img/planting/17_spz_m.jpg'},
+          {id: '102', img: 'http://192.168.43.75:8080/img/planting/18_birthday_m.jpg'},
+          {id: '103', img: 'http://192.168.43.75:8080/img/planting/19_yuanxiao_m.jpg'},
         ],
         themeList: [],
         recentList: [],
+        url:api.url,
       }
     },
     created() {

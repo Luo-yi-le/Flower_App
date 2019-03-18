@@ -6,13 +6,13 @@ const vueLoaderConfig = require('./vue-loader.conf')
 
 const vuxLoader = require('vux-loader')
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
 
 //module.exports = {
-  const originalConfig={
+const originalConfig = {
   context: path.resolve(__dirname, '../'),
   entry: {
     app: './src/main.js'
@@ -25,7 +25,7 @@ function resolve (dir) {
       : config.dev.assetsPublicPath
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json','.less'],
+    extensions: ['.js', '.vue', '.json', '.less'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
@@ -33,6 +33,10 @@ function resolve (dir) {
       'pages': path.resolve(__dirname, '../src/pages'),
       'store': path.resolve(__dirname, '../src/store'),
     }
+  },
+  devtool: 'cheap-module-eval-source-map',
+  performance: {
+    hints: false
   },
   module: {
     rules: [
@@ -69,9 +73,22 @@ function resolve (dir) {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
+      },
+      {
+        test: /\.scss$/,
+        use: [{
+          loader: "style-loader" // creates style nodes from JS strings
+        }, {
+          loader: "css-loader" // translates CSS into CommonJS
+        }, {
+          loader: "sass-loader" // compiles Sass to CSS
+        }]
       }
-    ]
+    ],
+
+
   },
+
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
     // source contains it (although only uses it if it's native).
@@ -83,7 +100,7 @@ function resolve (dir) {
     net: 'empty',
     tls: 'empty',
     child_process: 'empty'
-  }
+  },
 }
 
 const webpackConfig = originalConfig
@@ -98,14 +115,30 @@ module.exports = vuxLoader.merge(webpackConfig, {
       name: 'vux-ui'
     },
     {
-      name:'progress-bar'
+      name: 'progress-bar'
     },
     {
       name: 'duplicate-style'
     },
     {
       name: 'less-theme',
-      path:'static/styles/theme.less'
+      path: 'static/styles/theme.less'
     }
   ]
 })
+// if (process.env.NODE_ENV === 'production') {
+//   module.exports.devtool = 'cheap-module-eval-source-map'
+//   // http://vue-loader.vuejs.org/en/workflow/production.html
+//   module.exports.plugins = (module.exports.plugins || []).concat([
+//     new webpack.DefinePlugin({
+//       'process.env': {
+//         NODE_ENV: '"production"'
+//       }
+//     }),
+//     new webpack.optimize.UglifyJsPlugin({
+//       compress: {
+//         warnings: false
+//       }
+//     })
+//   ])
+// }

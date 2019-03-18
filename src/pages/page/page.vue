@@ -132,38 +132,39 @@
         background-repeat: no-repeat;
 
         &.icon-home {
-          background-image: url("../../../static/img/toolbar/home.png");
+          /*background-image: url("../../../static/img/toolbar/home.png");*/
+          background-image: url('../../assets/img/toolbar/home.png');
         }
 
         &.icon-category {
-          background-image: url('../../../static/img/toolbar/category.png');
+          background-image: url('../../assets/img/toolbar/category.png');
         }
 
         &.icon-cart {
-          background-image: url('../../../static/img/toolbar/cart.png');
+          background-image: url('../../assets/img/toolbar/cart.png');
         }
 
         &.icon-user {
-          background-image: url('../../../static/img/toolbar/my.png');
+          background-image: url('../../assets/img/toolbar/my.png');
         }
       }
 
       &.weui-bar__item_on {
         .icon {
           &.icon-home {
-            background-image: url('../../../static/img/toolbar/home@selected.png') !important;
+            background-image: url('../../assets/img/toolbar/home@selected.png') !important;
           }
 
           &.icon-category {
-            background-image: url('../../../static/img/toolbar/category@selected.png') !important;
+            background-image: url('../../assets/img/toolbar/category@selected.png') !important;
           }
 
           &.icon-cart {
-            background-image: url('../../../static/img/toolbar/cart@selected.png') !important;
+            background-image: url('../../assets/img/toolbar/cart@selected.png') !important;
           }
 
           &.icon-user {
-            background-image: url('../../../static/img/toolbar/my@selected.png') !important;
+            background-image: url('../../assets/img/toolbar/my@selected.png') !important;
           }
         }
       }
